@@ -15,6 +15,6 @@ int main()
   printf("add_one1(7) = %d\n", add_one1(7));
 
   printf("add_one2(7) = %d\n", add_one2(7));
-
+  printf("add_one3() = %p\n",add_one3());
   return 0;
 }

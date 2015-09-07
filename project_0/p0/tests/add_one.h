@@ -9,5 +9,5 @@
 
 int add_one1(int);
 int add_one2(int);
-
+int* add_one3(void);
 #endif /* __ADD_ONE_H */

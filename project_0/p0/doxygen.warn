@@ -1,0 +1,61 @@
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/add_one.h:10: warning: Member add_one1(int) (function) of file add_one.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/add_one.h:11: warning: Member add_one2(int) (function) of file add_one.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/add_one.h:12: warning: Member add_one3(void) (function) of file add_one.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/add_one_test.c:13: warning: Member main() (function) of file add_one_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/alarming_test.c:26: warning: Member MEGABYTE (macro definition) of file alarming_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/alarming_test.c:30: warning: Member alarming(char *str, char *notstr) (function) of file alarming_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/alarming_test.c:37: warning: Member dingdong(int sig) (function) of file alarming_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/alarming_test.c:45: warning: Member main() (function) of file alarming_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/alarming_test.c:28: warning: Member work_done (variable) of file alarming_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/evil_test.c:19: warning: Member foo(char *str) (function) of file evil_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/evil_test.c:23: warning: Member main() (function) of file evil_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/get_ebp_info.h:11: warning: Member get_ebp(void) (function) of file get_ebp_info.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:21: warning: Member TRUE (macro definition) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:22: warning: Member FALSE (macro definition) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:23: warning: Member ERROR (macro definition) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:26: warning: Member PREV_FRAME_PTR(curr) (macro definition) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:27: warning: Member GET_RET_ADDR(ebp) (macro definition) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:38: warning: Member check_if_addr_valid(void *addr, int iter) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:65: warning: Member check_if_frame_valid(void *base_ptr) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:103: warning: Member get_caller_site_addr(void *base_ptr) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:115: warning: Member get_func_index_by_ret_addr(void *ret_addr) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:144: warning: Member get_args_and_values_list(void *base_ptr, int functions_index) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:198: warning: Member print_traceback_entry(const char *func_name, char **args_details) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:202: warning: Member get_next_frame(void *frame_base_ptr) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:220: warning: Member segfault_handler(int signal, siginfo_t *info, void *arg) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:231: warning: Member traceback(FILE *fp) (function) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.c:30: warning: Member buf (variable) of file traceback.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback.h:17: warning: Member traceback(FILE *) (function) of file traceback.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_globals.c:16: warning: Member functions[FUNCTS_MAX_NUM] (variable) of file traceback_globals.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:24: warning: Member TYPE_CHAR (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:25: warning: Member TYPE_INT (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:26: warning: Member TYPE_FLOAT (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:27: warning: Member TYPE_DOUBLE (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:28: warning: Member TYPE_STRING (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:29: warning: Member TYPE_STRING_ARRAY (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:30: warning: Member TYPE_VOIDSTAR (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:31: warning: Member TYPE_UNKNOWN (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:35: warning: Member ARGS_MAX_NUM (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:37: warning: Member ARGS_MAX_NAME (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:39: warning: Member FUNCTS_MAX_NUM (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:41: warning: Member FUNCTS_MAX_NAME (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:44: warning: Member MAX_FUNCTION_SIZE_BYTES (macro definition) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:76: warning: Member functions[FUNCTS_MAX_NUM] (variable) of file traceback_internal.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:28: warning: Member PRINTF(...) (macro definition) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:16: warning: Member handler_t(int) (typedef) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:13: warning: Member unix_error(char *msg) (function) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:14: warning: Member Malloc(size_t size) (function) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:17: warning: Member Signal(int signum, handler_t *handler) (function) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:19: warning: Member Sigemptyset(sigset_t *set) (function) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/user_functions_wrapper.h:21: warning: Member Sigaction(int signum, const struct sigaction *act, struct sigaction *oldact) (function) of file user_functions_wrapper.h is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/verify_test.c:13: warning: Member f4(int i, float f) (function) of file verify_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/verify_test.c:18: warning: Member f3(char c, char *str) (function) of file verify_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/verify_test.c:23: warning: Member f2(void) (function) of file verify_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/verify_test.c:28: warning: Member f1(char **array) (function) of file verify_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/tests/verify_test.c:33: warning: Member main() (function) of file verify_test.c is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:50: warning: Member type (variable) of class argsym_t is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:53: warning: Member offset (variable) of class argsym_t is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:56: warning: Member name[ARGS_MAX_NAME] (variable) of class argsym_t is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:64: warning: Member addr (variable) of class functsym_t is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:67: warning: Member name[FUNCTS_MAX_NAME] (variable) of class functsym_t is not documented.
+/afs/andrew.cmu.edu/usr2/idawer/OS/Operating-System/project_0/p0/traceback/traceback_internal.h:70: warning: Member args[ARGS_MAX_NUM] (variable) of class functsym_t is not documented.

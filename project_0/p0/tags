@@ -1,0 +1,60 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ARGS_MAX_NAME	./traceback/traceback_internal.h	36;"	d
+ARGS_MAX_NUM	./traceback/traceback_internal.h	34;"	d
+ASSERT	./traceback/contracts.h	16;"	d
+ASSERT	./traceback/contracts.h	22;"	d
+ASSERT	./traceback/contracts.h	28;"	d
+ENSURES	./traceback/contracts.h	18;"	d
+ENSURES	./traceback/contracts.h	24;"	d
+ENSURES	./traceback/contracts.h	30;"	d
+FUNCTS_MAX_NAME	./traceback/traceback_internal.h	40;"	d
+FUNCTS_MAX_NUM	./traceback/traceback_internal.h	38;"	d
+MAX_FUNCTION_SIZE_BYTES	./traceback/traceback_internal.h	43;"	d
+MEGABYTE	./tests/alarming_test.c	26;"	d	file:
+REQUIRES	./traceback/contracts.h	17;"	d
+REQUIRES	./traceback/contracts.h	23;"	d
+REQUIRES	./traceback/contracts.h	29;"	d
+TYPE_CHAR	./traceback/traceback_internal.h	24;"	d
+TYPE_DOUBLE	./traceback/traceback_internal.h	27;"	d
+TYPE_FLOAT	./traceback/traceback_internal.h	26;"	d
+TYPE_INT	./traceback/traceback_internal.h	25;"	d
+TYPE_STRING	./traceback/traceback_internal.h	28;"	d
+TYPE_STRING_ARRAY	./traceback/traceback_internal.h	29;"	d
+TYPE_UNKNOWN	./traceback/traceback_internal.h	31;"	d
+TYPE_VOIDSTAR	./traceback/traceback_internal.h	30;"	d
+__ADD_ONE_H	./tests/add_one.h	8;"	d
+__traceback_h_	./traceback/traceback.h	10;"	d
+__traceback_internal_h_	./traceback/traceback_internal.h	19;"	d
+addr	./traceback/traceback_internal.h	/^  void *addr; $/;"	m	struct:__anon2
+alarming	./tests/alarming_test.c	/^void alarming(char *str, char *notstr) {$/;"	f
+args	./traceback/traceback_internal.h	/^  argsym_t args[ARGS_MAX_NUM]; $/;"	m	struct:__anon2
+argsym_t	./traceback/traceback_internal.h	/^} argsym_t;$/;"	t	typeref:struct:__anon1
+bar	./tests/simple_test.c	/^void bar(int x, int y)$/;"	f
+bar	./tests/voidstar_test.c	/^void bar(int x, int y)$/;"	f
+dingdong	./tests/alarming_test.c	/^void dingdong(int sig)$/;"	f
+f1	./tests/verify_test.c	/^void f1(char ** array)$/;"	f
+f2	./tests/verify_test.c	/^void f2(void)$/;"	f
+f3	./tests/verify_test.c	/^void f3(char c, char *str)$/;"	f
+f4	./tests/verify_test.c	/^void f4(int i, float f)$/;"	f
+foo	./tests/evil_test.c	/^void foo(char *str) {$/;"	f
+foo	./tests/simple_test.c	/^void foo() {$/;"	f
+foo	./tests/voidstar_test.c	/^void foo(void *lookma) {$/;"	f
+functions	./traceback/traceback_globals.c	/^const functsym_t functions[FUNCTS_MAX_NUM] = $/;"	v
+functsym_t	./traceback/traceback_internal.h	/^} functsym_t;$/;"	t	typeref:struct:__anon2
+main	./tests/add_one_test.c	/^int main()$/;"	f
+main	./tests/alarming_test.c	/^int main() {$/;"	f
+main	./tests/evil_test.c	/^int main() {$/;"	f
+main	./tests/simple_test.c	/^int main (int argc, char **argv)$/;"	f
+main	./tests/verify_test.c	/^int main()$/;"	f
+main	./tests/voidstar_test.c	/^int main (int argc, char **argv)$/;"	f
+name	./traceback/traceback_internal.h	/^  char name[ARGS_MAX_NAME];$/;"	m	struct:__anon1
+name	./traceback/traceback_internal.h	/^  char name[FUNCTS_MAX_NAME];$/;"	m	struct:__anon2
+offset	./traceback/traceback_internal.h	/^  int offset;$/;"	m	struct:__anon1
+traceback	./traceback/traceback.c	/^void traceback(FILE *fp)$/;"	f
+type	./traceback/traceback_internal.h	/^  int type;$/;"	m	struct:__anon1
+work_done	./tests/alarming_test.c	/^int work_done = 0;$/;"	v
