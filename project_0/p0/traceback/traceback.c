@@ -36,6 +36,13 @@
 /* Buffer for setjmp and longjmp */
 sigjmp_buf buf;
 
+/* Sigset to save the previous state of signal set */
+sigset_t old_set;
+
+/* Sigaction to save the old action of SIGSEGV handler */
+
+struct sigaction old_act;
+
 /*
  * mem_addr_valid : check if a particular memory address 
  * is valid 
@@ -54,11 +61,37 @@ int check_if_addr_valid(void * addr,int iter)
 			value = value;
 		} else 
 		{
+			sigset_t temp_set = old_set;
+			Sigdelset(&temp_set,SIGSEGV);
+			Sigprocmask(SIG_SETMASK,&temp_set,NULL);
 			return FALSE;
 		}
 	}
         return TRUE;
 }
+
+/*
+ */
+
+int is_protected_mem_writable(void * base_ptr)
+{
+	void ** prev_frame_ptr = (void *)PREV_FRAME_PTR(base_ptr);
+	char value_restore ;
+	if (!sigsetjmp(buf,1))
+	{
+		value_restore = *(char*)prev_frame_ptr;
+		memset(*prev_frame_ptr,0,sizeof(char));
+	} else 
+	{
+		sigset_t temp_set = old_set;
+		Sigdelset(&temp_set,SIGSEGV);
+		Sigprocmask(SIG_SETMASK,&temp_set,NULL);
+		return TRUE;
+	}
+	memset(*prev_frame_ptr,value_restore,sizeof(char));
+	return FALSE;
+}
+
 
 /*
  * @function check_if_frame_valid(void * base_ptr)
@@ -92,14 +125,16 @@ int check_if_frame_valid(void * base_ptr)
 
         if (is_addr_valid)
         {
-                prev_frame_ptr = PREV_FRAME_PTR(curr_frame_ptr);
-                if (prev_frame_ptr > curr_frame_ptr)
-                {
-                        return TRUE;
-                } else 
-                {
-                        return FALSE;
-                }
+		prev_frame_ptr = PREV_FRAME_PTR(curr_frame_ptr);
+		if (prev_frame_ptr > curr_frame_ptr)
+		{
+			return TRUE;
+		} else 
+		{
+			if (is_protected_mem_writable(base_ptr))
+					return ERROR;
+			return FALSE;
+		}
         } else 
         {
                return ERROR;
@@ -135,7 +170,8 @@ int get_func_index_by_ret_addr(void * ret_addr)
 
         for (;strlen(functions[i].name) != 0 && i < FUNCTS_MAX_NAME; i++)
         {
-                curr_addr_diff = ret_addr - functions[i].addr;
+                curr_addr_diff = (unsigned int)ret_addr - 
+				    (unsigned int)functions[i].addr;
                 if (curr_addr_diff > 0  && curr_addr_diff <= 
 						MAX_FUNCTION_SIZE_BYTES) 
 				{
@@ -224,6 +260,7 @@ char * verify_string_conditions(char * input)
 {
     	char ch;
 	char *  output_str = (char *) Malloc(MAX_STRING_SIZE); 
+	char *  temp_str = (char *) Malloc(MAX_STRING_SIZE); 
 	int i = 0,error=0;
 	while (!error)
 	{
@@ -239,6 +276,9 @@ char * verify_string_conditions(char * input)
 				} else 
 				{
 					error = TRUE;
+					snprintf(output_str,MAX_STRING_SIZE,
+							"%p",input);
+					break;
 				}
 				i++;
 			} else 
@@ -248,12 +288,15 @@ char * verify_string_conditions(char * input)
 
 		} else 
 		{
+			snprintf(output_str,MAX_STRING_SIZE,
+						    "%p",input);
 			error = TRUE;
 		}
 	}
 	if (error)
-		return NULL;
-	else
+	{
+		return output_str;
+	} else 
 	{
 		if ( i > MAX_STRING_WO_DOTS -1 )
 			for (i = MAX_STRING_WO_DOTS; i < MAX_STRING_SIZE-1;i++)
@@ -261,7 +304,8 @@ char * verify_string_conditions(char * input)
 				output_str[i]='.';
 			}
 		output_str[i] = '\0';
-		return output_str;
+		snprintf(temp_str,ARG_STRING_SIZE,"\"%s\"",output_str);
+		return temp_str;
 	}
 }
 
@@ -274,15 +318,9 @@ int handle_string(char * entry,void ** ptr,const char * name)
 	{
 		value =  *ptr;
 		output_str = verify_string_conditions((char *)value);
-		if (output_str != NULL)
-		{
-			snprintf(entry,ARG_STRING_SIZE,
-					"char *%s=\"%s\",",name,output_str);
-			free(output_str);
-		}
-		else
-			snprintf(entry,ARG_STRING_SIZE,
-					"char *%s=%p,",name,value);
+		snprintf(entry,ARG_STRING_SIZE,
+				"char *%s=%s,",name,output_str);
+		free(output_str);
 		return TRUE;
 	}
 	return FALSE;
@@ -293,57 +331,50 @@ int handle_string_array(char * entry,void *** ptr,const char * name)
 	void ** value;
 	int i = 0,error = 0 ;
 	char * string_entry;
-	char * output_str = (char *) Malloc(ARG_STRING_SIZE);
-	output_str = "";  
+	char * iterator;
+	snprintf(entry,ARG_STRING_SIZE,"char **%s={",name);
 	if (check_if_addr_valid(ptr,sizeof(char **)))
 	{
 		value = * ptr;
-		while (!error)
+		while (TRUE)
 		{
-			if (check_if_addr_valid(value + i,sizeof(char*)))
+			int result = check_if_addr_valid(value + i,
+					sizeof(char*)) && value[i] != NULL;
+			if (result) 
 			{
 				string_entry = verify_string_conditions(
 						(char*)value[i]); 
+				iterator = entry + strlen(entry);
 				if ( i < 3 ) 
 				{
 					if (string_entry != NULL)
 					{
-						if (strlen(string_entry) != 0 )
-						{
-						    snprintf(output_str + 
-							    strlen(output_str),
-							 ARG_STRING_SIZE,
-							 "{\"%s\"},",
-							 string_entry);
-						} else 
-						{
-							break;
-						}
-					} else 
-					{
-					    snprintf(output_str+strlen(output_str),
-								ARG_STRING_SIZE,
-							    "{%p},",value[i]);
-					}
+					    snprintf(iterator,
+						 ARG_STRING_SIZE,
+						 "%s,",
+						 string_entry);
+					} 
 
-					i++;
 				} else 
 				{
-					snprintf(output_str+strlen(output_str),
-							ARG_STRING_SIZE,
+					snprintf(iterator,ARG_STRING_SIZE,
 							"...");
 					break;
 				}
-
+				i++;
 			} else 
 			{
-				error = TRUE;
-			}
-			
-		}
 
-		snprintf(entry,ARG_STRING_SIZE,"char **%s=%s,",name,output_str);
-		free(output_str);        
+				snprintf(entry,ARG_STRING_SIZE,
+						"char **%s=%p",name,value);
+				return TRUE;
+			}
+		}
+		if (i >= 3) 
+			iterator = entry + strlen(entry);
+		else 
+			iterator = entry + strlen(entry) -1;
+		snprintf(iterator,ARG_STRING_SIZE,"},");
 	} else 
 	{
 		error = TRUE;
@@ -382,7 +413,8 @@ int handle_unknown(char * entry,void ** ptr,const char * name)
 
 
 
-char * get_args_and_values_list(void * base_ptr, int functions_index)
+char * get_args_and_values_list(void * base_ptr, 
+				int functions_index)
 {
         int i=0,success= FALSE;
         void * ptr;
@@ -391,9 +423,16 @@ char * get_args_and_values_list(void * base_ptr, int functions_index)
 	const char * name = functions[functions_index].name;
 	char * traceback_entry = (char * ) Malloc(MAX_TRACEBACK_ENTRY_SIZE);
 	char * entry_temp;
+        void * ret_addr = GET_RET_ADDR(base_ptr);
 
-	snprintf(traceback_entry,MAX_TRACEBACK_ENTRY_SIZE,
-			"Function %s(",name);
+	if (functions_index == -1)
+	{
+		snprintf(traceback_entry,MAX_TRACEBACK_ENTRY_SIZE,
+				"Function %p(...), in\n",ret_addr);
+		return traceback_entry;
+	} 
+    	snprintf(traceback_entry,MAX_TRACEBACK_ENTRY_SIZE,
+				"Function %s(",name);
 
 	PRINTF("Arg len name is %s\n",args_list[i].name);
         for(; strlen(args_list[i].name) != 0 && i < ARGS_MAX_NUM; i++)
@@ -438,6 +477,7 @@ char * get_args_and_values_list(void * base_ptr, int functions_index)
                 }
         }
 
+	
 	if ( strlen(args_list[0].name) == 0)
 	{
 		PRINTF("Handling it \n");
@@ -459,7 +499,8 @@ char * get_args_and_values_list(void * base_ptr, int functions_index)
 void print_traceback_entry(FILE * fp, char * args_details)
 {
 	/* EDIT: change 1 to fd */
-	write(1,args_details,strlen(args_details));
+	int output_fd = fileno(fp);
+	write(output_fd,args_details,strlen(args_details));
 	free(args_details);
 }
 
@@ -511,15 +552,28 @@ void traceback(FILE *fp)
         memset(&new_act,0,sizeof(new_act));
         /* Initialising the signal set */
 
-        Sigemptyset(&new_act.sa_mask);
-        new_act.sa_flags = SA_SIGINFO | SA_NODEFER;
+	sigset_t new_set;
+
+	/* Adding all signals to mask for blocking during handler
+	 * except SIGSEGV */
+        Sigfillset(&new_act.sa_mask);
+	Sigdelset(&new_act.sa_mask,SIGSEGV);
+        new_act.sa_flags = SA_SIGINFO;
+
+	/*Saving previous SIGSEGV handler action */
+
+	Sigaction(SIGSEGV,NULL,&old_act);
+
+	/* Unblock SIGSEGV signal and save the previous old set*/
+	sigemptyset(&new_set);
+	sigaddset(&new_set,SIGSEGV);
+	Sigprocmask(SIG_UNBLOCK,&new_set,&old_set);
 
         /* Binding the handler to the sigaction */
         new_act.sa_sigaction = segfault_handler;
 
         /* Overiding the Segmentation fault signal default behavior*/
         Sigaction(SIGSEGV,&new_act,NULL);
-
 
         /* Check if the frame is valid */
         while (TRUE) 
@@ -579,4 +633,8 @@ void traceback(FILE *fp)
                         break;
                 }
         }
+
+	/* Restoring the old action for SIGSEGV */
+	Sigaction(SIGSEGV,&old_act,NULL);
 }
+

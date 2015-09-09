@@ -32,7 +32,7 @@ void f1(char ** array)
 
 int main()
 {
-  char *arg[] = {"foo", "bar", "baz", "bletch"};
+  char *arg[] = {"foo", "bar" };
 
   f1(arg);
 

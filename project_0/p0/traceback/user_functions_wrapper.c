@@ -49,3 +49,50 @@ void Sigaction(int signum, const struct sigaction *act,struct sigaction *oldact)
         unix_error("Sigaction error");
     return;
 }
+
+/* Wrapper for Sigprocmask */
+void Sigprocmask(int how, const sigset_t *set, sigset_t *oldset)
+{
+	    if (sigprocmask(how, set, oldset) < 0)
+			unix_error("Sigprocmask error");
+	        return;
+}
+
+
+
+/* Wrapper for Sigfillset */
+void Sigfillset(sigset_t *set)
+{ 
+	    if (sigfillset(set) < 0)
+			unix_error("Sigfillset error");
+	        return;
+}
+
+
+/* Wrapper for Sigaddset */
+void Sigaddset(sigset_t *set, int signum)
+{
+	    if (sigaddset(set, signum) < 0)
+			unix_error("Sigaddset error");
+	        return;
+}
+
+
+/* Wrapper for Sigdelset */
+void Sigdelset(sigset_t *set, int signum)
+{
+	    if (sigdelset(set, signum) < 0)
+			unix_error("Sigdelset error");
+	        return;
+}
+
+
+/* Wrapper for Sigismember */
+int Sigismember(const sigset_t *set, int signum)
+{
+	    int rc;
+	        if ((rc = sigismember(set, signum)) < 0)
+			    unix_error("Sigismember error");
+		    return rc;
+}
+
