@@ -1,13 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<signal.h>
+#define TRUE 1
+#define FALSE 0
+
+
 typedef void handler_t(int);
 
 /* Error handling function */
 void unix_error(char *msg) 
 {
     fprintf(stderr, "msg: %s\n", msg);
-    exit(0);
 }
 
 /* Wrapper for signal function */
@@ -30,60 +33,81 @@ void *Malloc(size_t size)
     void *p;
 
     if ((p  = malloc(size)) == NULL)
+	{
         unix_error("Malloc error");
+		return NULL;
+	}
     return p;
 }
 
 /* Wrapper for Sigemptyset */
-void Sigemptyset(sigset_t *set)
+int Sigemptyset(sigset_t *set)
 {
-    if (sigemptyset(set) < 0)
+    if (sigemptyset(set) < 0) 
+	{
         unix_error("Sigemptyset error");
-    return;
+		return 0;
+	}
+	return 1;
 }
 
 /* Wrapper for Sigaction */
-void Sigaction(int signum, const struct sigaction *act,struct sigaction *oldact)
+int Sigaction(int signum, const struct sigaction *act,struct sigaction *oldact)
 {
     if (sigaction(signum,act,oldact) < 0)
-        unix_error("Sigaction error");
-    return;
+    {
+        unix_error("Sigemptyset error");
+		return 0;
+	}
+	return 1;
 }
 
 /* Wrapper for Sigprocmask */
-void Sigprocmask(int how, const sigset_t *set, sigset_t *oldset)
+int Sigprocmask(int how, const sigset_t *set, sigset_t *oldset)
 {
 	    if (sigprocmask(how, set, oldset) < 0)
-			unix_error("Sigprocmask error");
-	        return;
+		{
+			unix_error("Sigemptyset error");
+			return 0;
+		}
+		return 1;
 }
 
 
 
 /* Wrapper for Sigfillset */
-void Sigfillset(sigset_t *set)
+int Sigfillset(sigset_t *set)
 { 
 	    if (sigfillset(set) < 0)
-			unix_error("Sigfillset error");
-	        return;
+		{
+			unix_error("Sigemptyset error");
+			return 0;
+		}
+		return 1;
 }
 
 
 /* Wrapper for Sigaddset */
-void Sigaddset(sigset_t *set, int signum)
+int Sigaddset(sigset_t *set, int signum)
 {
 	    if (sigaddset(set, signum) < 0)
-			unix_error("Sigaddset error");
-	        return;
+		{
+			unix_error("Sigemptyset error");
+			return 0;
+		}
+		return 1;
 }
 
 
 /* Wrapper for Sigdelset */
-void Sigdelset(sigset_t *set, int signum)
+int Sigdelset(sigset_t *set, int signum)
 {
 	    if (sigdelset(set, signum) < 0)
-			unix_error("Sigdelset error");
-	        return;
+		{
+			unix_error("Sigemptyset error");
+			return 0;
+		}
+		return 1;
 }
 
 
@@ -91,8 +115,8 @@ void Sigdelset(sigset_t *set, int signum)
 int Sigismember(const sigset_t *set, int signum)
 {
 	    int rc;
-	        if ((rc = sigismember(set, signum)) < 0)
-			    unix_error("Sigismember error");
-		    return rc;
+		if ((rc = sigismember(set, signum)) < 0)
+			unix_error("Sigismember error");
+		return rc;
 }
 

@@ -22,12 +22,24 @@
 
 #define TRUE 1
 #define FALSE 0
+#define STOP -1
 #define ERROR -1
 #define ADDR_LOC_32 4
 #define MAX_TRACEBACK_ENTRY_SIZE 1024
 #define ARG_STRING_SIZE 256
 #define MAX_STRING_SIZE 29
 #define MAX_STRING_WO_DOTS 25
+#define SIG_SET_ENV 1
+
+/* System call error code */
+#define SIG_EMPTY_ERROR -2
+#define SIG_ACT_ERROR -3
+#define SIG_PROC_ERROR -4
+#define SIG_FILL_ERROR -5
+#define SIG_ADD_ERROR -6
+#define SIG_MEM_ERROR -7
+#define WRITE_ERROR -8
+#define SIG_DEL_ERROR -9
 
 /* Macro to get frame pointer of the caller function (%ebp) */ 
 #define PREV_FRAME_PTR(curr) (unsigned long *)(*((unsigned long *)curr))
@@ -55,19 +67,16 @@ int check_if_addr_valid(void * addr,int iter)
 	int i = 0 ;
 	for (; i < iter ; i++)
 	{
-		if (!sigsetjmp(buf,1))
+		if (!sigsetjmp(buf,SIG_SET_ENV))
 		{
 			char value = *(char *)(addr + i);
 			value = value;
 		} else 
 		{
-			sigset_t temp_set = old_set;
-			Sigdelset(&temp_set,SIGSEGV);
-			Sigprocmask(SIG_SETMASK,&temp_set,NULL);
 			return FALSE;
 		}
 	}
-        return TRUE;
+    return TRUE;
 }
 
 /*
@@ -77,15 +86,12 @@ int is_protected_mem_writable(void * base_ptr)
 {
 	void ** prev_frame_ptr = (void *)PREV_FRAME_PTR(base_ptr);
 	char value_restore ;
-	if (!sigsetjmp(buf,1))
+	if (!sigsetjmp(buf,SIG_SET_ENV))
 	{
 		value_restore = *(char*)prev_frame_ptr;
 		memset(*prev_frame_ptr,0,sizeof(char));
 	} else 
 	{
-		sigset_t temp_set = old_set;
-		Sigdelset(&temp_set,SIGSEGV);
-		Sigprocmask(SIG_SETMASK,&temp_set,NULL);
 		return TRUE;
 	}
 	memset(*prev_frame_ptr,value_restore,sizeof(char));
@@ -113,18 +119,18 @@ int is_protected_mem_writable(void * base_ptr)
 
 int check_if_frame_valid(void * base_ptr)
 {
-        /* TC: Base ptr should never be null */
-        ENSURES(base_ptr != NULL);
-        
-        int is_addr_valid = 0 ;
-        unsigned long * curr_frame_ptr = (unsigned long *) base_ptr,
-                      * prev_frame_ptr = NULL;
+	/* TC: Base ptr should never be null */
+	ENSURES(base_ptr != NULL);
+	
+	int is_addr_valid = FALSE ;
+	unsigned long * curr_frame_ptr = (unsigned long *) base_ptr,
+				  * prev_frame_ptr = NULL;
 
-        /* Check if base pointer is a valid address */
-        is_addr_valid = check_if_addr_valid(base_ptr,ADDR_LOC_32);
+	/* Check if base pointer is a valid address */
+	is_addr_valid = check_if_addr_valid(base_ptr,ADDR_LOC_32);
 
-        if (is_addr_valid)
-        {
+	if (is_addr_valid)
+	{
 		prev_frame_ptr = PREV_FRAME_PTR(curr_frame_ptr);
 		if (prev_frame_ptr > curr_frame_ptr)
 		{
@@ -132,64 +138,46 @@ int check_if_frame_valid(void * base_ptr)
 		} else 
 		{
 			if (is_protected_mem_writable(base_ptr))
-					return ERROR;
+				return STOP;
 			return FALSE;
 		}
-        } else 
-        {
-               return ERROR;
-        } 
-}
-
-/* @function get_caller_site_addr(void * base_ptr)
- * @brief Get the call site address 
- *
- * The return address is evaluated from the stack by incrementing the 
- * base_ptr by 4 bytes
- */
-
-void * get_caller_site_addr(void * base_ptr)
-{
-        /* TC: base_ptr should never be NULL*/
-        ENSURES(base_ptr != NULL);
-
-        void * ret_addr = GET_RET_ADDR(base_ptr);
-
-        REQUIRES(ret_addr != NULL);
-        return ret_addr;
+	} else 
+	{
+		   return STOP;
+	} 
 }
 
 
 int get_func_index_by_ret_addr(void * ret_addr)
 {
-        /*TC: ret_addr cannot be zero*/
+	/*TC: ret_addr cannot be zero*/
 
-        ENSURES(ret_addr != NULL);
-        int i = 0,prev_addr_diff = 0,index=-1,
-            curr_addr_diff;
+	ENSURES(ret_addr != NULL);
+	int i = 0,prev_addr_diff = 0,index=-1,
+		curr_addr_diff;
 
-        for (;strlen(functions[i].name) != 0 && i < FUNCTS_MAX_NAME; i++)
-        {
-                curr_addr_diff = (unsigned int)ret_addr - 
-				    (unsigned int)functions[i].addr;
-                if (curr_addr_diff > 0  && curr_addr_diff <= 
-						MAX_FUNCTION_SIZE_BYTES) 
-				{
-                       if ( prev_addr_diff == 0 ) 
-                       {
-                               prev_addr_diff = curr_addr_diff;
-                               index = 0 ;
-                               continue;
-                       }
-                       if (curr_addr_diff < prev_addr_diff)
-                       {
-                               index = i;
-                               prev_addr_diff = curr_addr_diff;
-                       }
-                }
-        }        
-        REQUIRES(i >= 0 );
-        return index;
+	for (;strlen(functions[i].name) != 0 && i < FUNCTS_MAX_NAME; i++)
+	{
+		curr_addr_diff = (unsigned int)ret_addr - 
+			(unsigned int)functions[i].addr;
+		if (curr_addr_diff > 0  && curr_addr_diff <= 
+				MAX_FUNCTION_SIZE_BYTES) 
+		{
+		   if ( prev_addr_diff == 0 ) 
+		   {
+			   prev_addr_diff = curr_addr_diff;
+			   index = 0 ;
+			   continue;
+		   }
+		   if (curr_addr_diff < prev_addr_diff)
+		   {
+			   index = i;
+			   prev_addr_diff = curr_addr_diff;
+		   }
+		}
+	}        
+	REQUIRES(i >= 0 );
+	return index;
 }
 
 int handle_char(char * entry,void * ptr,const char * name)
@@ -209,7 +197,6 @@ int handle_char(char * entry,void * ptr,const char * name)
 			snprintf(entry,ARG_STRING_SIZE,
 					"char %s='\\%o',",name,value);
 		}
-
 		return TRUE;
 	} else 
 	{
@@ -258,7 +245,7 @@ int handle_double(char * entry,void * ptr,const char * name)
 
 char * verify_string_conditions(char * input)
 {
-    	char ch;
+	char ch;
 	char *  output_str = (char *) Malloc(MAX_STRING_SIZE); 
 	char *  temp_str = (char *) Malloc(MAX_STRING_SIZE); 
 	int i = 0,error=0;
@@ -298,13 +285,14 @@ char * verify_string_conditions(char * input)
 		return output_str;
 	} else 
 	{
-		if ( i > MAX_STRING_WO_DOTS -1 )
+		if (i > MAX_STRING_WO_DOTS -1)
 			for (i = MAX_STRING_WO_DOTS; i < MAX_STRING_SIZE-1;i++)
 			{
 				output_str[i]='.';
 			}
 		output_str[i] = '\0';
 		snprintf(temp_str,ARG_STRING_SIZE,"\"%s\"",output_str);
+		free(output_str);
 		return temp_str;
 	}
 }
@@ -318,8 +306,7 @@ int handle_string(char * entry,void ** ptr,const char * name)
 	{
 		value =  *ptr;
 		output_str = verify_string_conditions((char *)value);
-		snprintf(entry,ARG_STRING_SIZE,
-				"char *%s=%s,",name,output_str);
+		snprintf(entry,ARG_STRING_SIZE,"char *%s=%s,",name,output_str);
 		free(output_str);
 		return TRUE;
 	}
@@ -343,31 +330,32 @@ int handle_string_array(char * entry,void *** ptr,const char * name)
 			if (result) 
 			{
 				string_entry = verify_string_conditions(
-						(char*)value[i]); 
+						(char*)value[i]);
 				iterator = entry + strlen(entry);
-				if ( i < 3 ) 
+				if (i < 3) 
 				{
 					if (string_entry != NULL)
 					{
-					    snprintf(iterator,
-						 ARG_STRING_SIZE,
-						 "%s,",
-						 string_entry);
+					    snprintf(iterator,ARG_STRING_SIZE,"%s,",string_entry);
+						free(string_entry);
 					} 
 
 				} else 
 				{
-					snprintf(iterator,ARG_STRING_SIZE,
-							"...");
+					snprintf(iterator,
+							ARG_STRING_SIZE,"...");
 					break;
 				}
 				i++;
 			} else 
 			{
-
-				snprintf(entry,ARG_STRING_SIZE,
-						"char **%s=%p",name,value);
-				return TRUE;
+				if (!check_if_addr_valid(value + i,sizeof(char*)))
+				{
+					iterator = entry + strlen(entry);
+					snprintf(iterator,ARG_STRING_SIZE,
+							"%p",value + i);
+				}
+				break;
 			}
 		}
 		if (i >= 3) 
@@ -385,7 +373,9 @@ int handle_string_array(char * entry,void *** ptr,const char * name)
 		return TRUE;
 }
 
-int handle_voidstar(char * entry,unsigned int * ptr,const char * name)
+int handle_voidstar(char * entry,
+					unsigned int * ptr,
+					const char * name)
 {
 	unsigned int value;
 	if (check_if_addr_valid(ptr,sizeof(void*)))
@@ -398,7 +388,9 @@ int handle_voidstar(char * entry,unsigned int * ptr,const char * name)
 	return FALSE;
 }
 
-int handle_unknown(char * entry,void ** ptr,const char * name)
+int handle_unknown(char * entry,
+				   void ** ptr,
+				   const char * name)
 {
 	void * value;
 	if (check_if_addr_valid(ptr,sizeof(void*)))
@@ -414,16 +406,16 @@ int handle_unknown(char * entry,void ** ptr,const char * name)
 
 
 char * get_args_and_values_list(void * base_ptr, 
-				int functions_index)
+		int functions_index)
 {
-        int i=0,success= FALSE;
-        void * ptr;
-        void * prev_frame_ptr = (void *) PREV_FRAME_PTR(base_ptr);
-        const argsym_t * args_list = functions[functions_index].args;
+	int i=0,success= FALSE;
+	void * ptr;
+	void * prev_frame_ptr = (void *) PREV_FRAME_PTR(base_ptr);
+	const argsym_t * args_list = functions[functions_index].args;
 	const char * name = functions[functions_index].name;
 	char * traceback_entry = (char * ) Malloc(MAX_TRACEBACK_ENTRY_SIZE);
 	char * entry_temp;
-        void * ret_addr = GET_RET_ADDR(base_ptr);
+    void * ret_addr = GET_RET_ADDR(base_ptr);
 
 	if (functions_index == -1)
 	{
@@ -431,18 +423,18 @@ char * get_args_and_values_list(void * base_ptr,
 				"Function %p(...), in\n",ret_addr);
 		return traceback_entry;
 	} 
-    	snprintf(traceback_entry,MAX_TRACEBACK_ENTRY_SIZE,
-				"Function %s(",name);
+	snprintf(traceback_entry,MAX_TRACEBACK_ENTRY_SIZE,
+			"Function %s(",name);
 
 	PRINTF("Arg len name is %s\n",args_list[i].name);
-        for(; strlen(args_list[i].name) != 0 && i < ARGS_MAX_NUM; i++)
-        {
-                ptr = prev_frame_ptr + args_list[i].offset;
-                argsym_t arg = args_list[i];
+	for(; strlen(args_list[i].name) != 0 && i < ARGS_MAX_NUM; i++)
+	{
+		ptr = prev_frame_ptr + args_list[i].offset;
+		argsym_t arg = args_list[i];
 		entry_temp = traceback_entry + strlen(traceback_entry);
 		PRINTF("Arg type is %d\n",arg.type);
-                switch(arg.type)
-                {
+		switch(arg.type)
+		{
 			case TYPE_CHAR:
 				success = handle_char(entry_temp,ptr,arg.name);
 				break;
@@ -474,11 +466,10 @@ char * get_args_and_values_list(void * base_ptr,
 				success = handle_unknown(entry_temp,(void**)ptr
 						,arg.name);
 				break;
-                }
-        }
+		}
+	}
 
-	
-	if ( strlen(args_list[0].name) == 0)
+	if (strlen(args_list[0].name) == 0)
 	{
 		PRINTF("Handling it \n");
 		success = TRUE;
@@ -487,6 +478,7 @@ char * get_args_and_values_list(void * base_ptr,
 	}
 	if (!success) 
 	{
+		free(traceback_entry);
 		return NULL;
 	} else 
 	{
@@ -496,24 +488,17 @@ char * get_args_and_values_list(void * base_ptr,
 	}
 }
 
-void print_traceback_entry(FILE * fp, char * args_details)
+int print_traceback_entry(int output_fd, char * args_details)
 {
 	/* EDIT: change 1 to fd */
-	int output_fd = fileno(fp);
-	write(output_fd,args_details,strlen(args_details));
+	int result = write(output_fd,args_details,strlen(args_details));
 	free(args_details);
+	if (result != -1 )
+		return TRUE;
+	else 
+		return FALSE;
 }
 
-void * get_next_frame(void * frame_base_ptr)
-{
-        /*TC: frame_base_ptr cannot be null */
-        ENSURES(frame_base_ptr != NULL);
-        void * prev_frame_ptr = (void*) PREV_FRAME_PTR(frame_base_ptr);
-        
-        /*TC: previous frame cannot be null*/
-        REQUIRES(prev_frame_ptr != NULL);
-        return prev_frame_ptr;
-}
 
 /*
  * @handler segfault_handler
@@ -524,7 +509,7 @@ void * get_next_frame(void * frame_base_ptr)
 
 void segfault_handler(int signal, siginfo_t * info, void * arg)
 {
-	longjmp(buf,1);
+	siglongjmp(buf,1);
 }
 
 /*
@@ -534,107 +519,151 @@ void segfault_handler(int signal, siginfo_t * info, void * arg)
 
 void traceback(FILE *fp)
 {
-        /* EDIT:To be removed */
+	/* EDIT:To be removed */
 
-        /* Defining local variables */
-        unsigned long * frame_base_ptr = (unsigned long * )get_ebp();
-        void * caller_site_address = NULL;
-        int is_frame_valid,is_ret_addr_valid,entry_in_functions;
-        char * args_values_list = NULL;
-       
-        /* 
-         * Defining the signal handler for handling SIGSEGV signal
-         * There are cases when an address needs to be validated and 
-         * Segmentation fault (SIGSEGV) can help in providing that info
-         */
-        struct sigaction new_act;
+	/* Defining local variables */
+	unsigned long * frame_base_ptr = (unsigned long * )get_ebp();
+	void * caller_site_address = NULL;
+	int is_frame_valid,is_ret_addr_valid,entry_in_functions;
+	char * args_values_list = NULL;
+	int result  = FALSE;
+	int output_fd = fileno(fp);
 
-        memset(&new_act,0,sizeof(new_act));
-        /* Initialising the signal set */
+	if( output_fd == -1)
+	{
+		fprintf(fp,"Not a valid stream to write");
+		return;
+	}
+   
+	/* 
+	 * Defining the signal handler for handling SIGSEGV signal
+	 * There are cases when an address needs to be validated and 
+	 * Segmentation fault (SIGSEGV) can help in providing that info
+	 */
+	struct sigaction new_act;
+
+	memset(&new_act,0,sizeof(new_act));
+	/* Initialising the signal set */
 
 	sigset_t new_set;
 
 	/* Adding all signals to mask for blocking during handler
 	 * except SIGSEGV */
-        Sigfillset(&new_act.sa_mask);
-	Sigdelset(&new_act.sa_mask,SIGSEGV);
-        new_act.sa_flags = SA_SIGINFO;
+	result = Sigfillset(&new_act.sa_mask);
+	if (result == ERROR)
+	{
+		return ;
+	}
+
+	result = Sigdelset(&new_act.sa_mask,SIGSEGV);
+	if (result == ERROR)
+	{
+		return ;
+	}
+	new_act.sa_flags = SA_SIGINFO;
 
 	/*Saving previous SIGSEGV handler action */
 
-	Sigaction(SIGSEGV,NULL,&old_act);
+	result = Sigaction(SIGSEGV,NULL,&old_act);
+	if (result == ERROR)
+	{
+		return ;
+	}
 
 	/* Unblock SIGSEGV signal and save the previous old set*/
-	sigemptyset(&new_set);
-	sigaddset(&new_set,SIGSEGV);
-	Sigprocmask(SIG_UNBLOCK,&new_set,&old_set);
+	result = Sigemptyset(&new_set);
+	if (result == ERROR)
+	{
+		return ;
+	}
 
-        /* Binding the handler to the sigaction */
-        new_act.sa_sigaction = segfault_handler;
+	result = Sigaddset(&new_set,SIGSEGV);
+	if (result == ERROR)
+	{
+		return ;
+	}
 
-        /* Overiding the Segmentation fault signal default behavior*/
-        Sigaction(SIGSEGV,&new_act,NULL);
+	result = Sigprocmask(SIG_UNBLOCK,&new_set,&old_set);
+	if (result == ERROR)
+	{
+		return ;
+	}
 
-        /* Check if the frame is valid */
-        while (TRUE) 
-        {
-                is_frame_valid = check_if_frame_valid(frame_base_ptr);
-                if (is_frame_valid == TRUE)
-                {
-                        /* 
-                         * Get the return address to call site
-                         * for this valid frame 
-                         */
-                        caller_site_address = get_caller_site_addr(
-                                        frame_base_ptr);
-                        
-                        ENSURES(caller_site_address != NULL);
-                        
-                        is_ret_addr_valid = check_if_addr_valid(
-                                        caller_site_address, ADDR_LOC_32);
+	/* Binding the handler to the sigaction */
+	new_act.sa_sigaction = segfault_handler;
 
-                        if (is_ret_addr_valid) 
-                        {
-                                /*
-                                 * Get the entry with the help of function 
-                                 * return address
-                                 */
-                                entry_in_functions = get_func_index_by_ret_addr(
-                                                caller_site_address);
-                                
-                                args_values_list = get_args_and_values_list(
-                                                frame_base_ptr,
-                                                entry_in_functions);
+	/* Overiding the Segmentation fault signal default behavior*/
+	result = Sigaction(SIGSEGV,&new_act,NULL);
+	if (result == ERROR)
+	{
+		return ;
+	}
 
-                                /* Print traceback entry by entry */
+	/* Check if the frame is valid */
+	while (TRUE) 
+	{
+		is_frame_valid = check_if_frame_valid(frame_base_ptr);
+		if (is_frame_valid == TRUE)
+		{
+			/* 
+			 * Get the return address to call site
+			 * for this valid frame 
+			 */
+			caller_site_address = GET_RET_ADDR(
+					frame_base_ptr);
+			
+			ENSURES(caller_site_address != NULL);
+			
+			is_ret_addr_valid = check_if_addr_valid(
+					caller_site_address, 
+					ADDR_LOC_32);
+
+			if (is_ret_addr_valid) 
+			{
+				/*
+				 * Get the entry with the help of function 
+				 * return address
+				 */
+				entry_in_functions = get_func_index_by_ret_addr(
+						caller_site_address);
+				
+				args_values_list = get_args_and_values_list(
+						frame_base_ptr,
+						entry_in_functions);
+
+				/* Print traceback entry by entry */
 				if (args_values_list != NULL)
 				{
-				    print_traceback_entry(
-                                                fp,
-                                                args_values_list
-                                                );
-    				} else 
-				{
-				    printf("Fatal error2 :\n");
-				    break;
-				}
-                        }
-                        
-                        /* Get next frame */
-                        frame_base_ptr = get_next_frame(frame_base_ptr);
-                } else if (is_frame_valid == FALSE)
-                { 
-                        printf("Fatal error1 :\n");
-                        /* EDIT: Not sure about exit value */
-                        //exit(-1);
-                        break;
-                } else if (is_frame_valid == ERROR)
-                {
-                        break;
-                }
-        }
-
+					result =print_traceback_entry(output_fd,
+							args_values_list);
+					if (result == FALSE)
+						return;
+				} 
+			}
+			/* Get next frame */
+			frame_base_ptr = PREV_FRAME_PTR(frame_base_ptr);
+		} else if (is_frame_valid == FALSE)
+		{ 
+				fprintf(fp,"Fatal error :Invalid frame\n");
+				/* EDIT: Not sure about exit value */
+				//exit(-1);
+				break;
+		} else if (is_frame_valid == STOP)
+		{
+				break;
+		}
+	}
 	/* Restoring the old action for SIGSEGV */
-	Sigaction(SIGSEGV,&old_act,NULL);
+	result = Sigaction(SIGSEGV,&old_act,NULL);
+	if (result == ERROR)
+	{
+		return ;
+	}
+	/* Restoring the old set */
+	result = Sigprocmask(SIG_SETMASK,&old_set,NULL);
+	if (result == ERROR)
+	{
+		return ;
+	}
 }
 

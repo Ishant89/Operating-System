@@ -38,7 +38,7 @@ void dingdong(int sig)
 {
   char buf[512];
 
-  snprintf(buf, sizeof (buf), "Signal %d hits!--More--Hello", sig);
+  snprintf(buf, sizeof (buf), "Signal %d hits!--More--", sig);
   alarming(buf, buf+MEGABYTE);
 }
 
