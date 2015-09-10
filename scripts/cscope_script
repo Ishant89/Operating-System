@@ -1,0 +1,3 @@
+find . -name "*.[ch]" > filenames
+find . -name "*.cxx" >> filenames
+find . -name "*.cpp" >> filenames
