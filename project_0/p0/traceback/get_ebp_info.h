@@ -8,6 +8,6 @@
 #define __GET_EBP_INFO_H
 
 /* EDIT: Check for pointer data type and remove this comment */
-long int * get_ebp(void);
+unsigned long * get_ebp(void);
 
 #endif

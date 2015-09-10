@@ -1,7 +1,7 @@
 /** @file user_functions_wrapper.h
  *  @brief wrapper functions definations for error handling
  *  
- *  This includes functions such as malloc,signal etc
+ *  This includes functions declarations such as malloc,signal etc
  *
  *  @author Ishant Dawer (idawer)
  */
@@ -10,6 +10,8 @@
 #define __WRAPPER_FUNC_H
 #include "contracts.h"
 #include<signal.h>
+
+/* Wrapper functions declarations*/
 void unix_error(char* msg);
 void *Malloc(size_t size);
 
@@ -24,6 +26,7 @@ int Sigdelset(sigset_t *set, int signum);
 int Sigismember(const sigset_t *set, int signum);
 #endif
 
+/* printf wrapper function */ 
 #ifdef DEBUG
 #define PRINTF(...) printf(__VA_ARGS__)
 #else

@@ -8,7 +8,6 @@
  * other files (.c or .S) */
 .global add_one1
 .global add_one2
-.global add_one3
 /* Method 1 saves off all of the callee save registers
  * and then adds one to the argument and returns it
  */
@@ -40,9 +39,4 @@ add_one1:
 add_one2:
 	movl	4(%esp),%eax	/* get the argument */
 	addl	$1,%eax		/* add one to it and return it */
-	ret
-
-
-add_one3:
-	movl	%ebp,%eax
 	ret

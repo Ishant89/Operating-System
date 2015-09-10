@@ -1,3 +1,13 @@
+/** @file user_functions_wrapper.c
+ *  @brief Wrappers for important Syscalls
+ *
+ *  This contains wrappers definitions for 
+ *  syscalls such as Malloc, sigfillset etc
+ *
+ *  @author Ishant Dawer (idawer)
+ *  @bug No bugs known
+ */
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<signal.h>
@@ -7,13 +17,29 @@
 
 typedef void handler_t(int);
 
-/* Error handling function */
+/** @brief  Error handling function
+ *
+ * This function prints the error assciated with
+ * system call 
+ *
+ * @param msg Error message
+ * @return void
+ */
+
 void unix_error(char *msg) 
 {
     fprintf(stderr, "msg: %s\n", msg);
 }
 
-/* Wrapper for signal function */
+/** @brief Signal Wrapper 
+ *
+ * Wrapper for signal syscall
+ *
+ * @param signum Signal number
+ * @param handler Handler pointer
+ * @return handler_t
+ *
+ */
 handler_t *Signal(int signum, handler_t *handler) 
 {
     struct sigaction action, old_action;
@@ -27,7 +53,14 @@ handler_t *Signal(int signum, handler_t *handler)
     return (old_action.sa_handler);
 }
 
-/*Wrapper for Malloc function */
+/** @brief Malloc Wrapper 
+ *
+ * Wrapper for malloc syscall
+ *
+ * @param size Size to be allocated 
+ * @return handler_t
+ *
+ */
 void *Malloc(size_t size) 
 {
     void *p;
@@ -40,7 +73,14 @@ void *Malloc(size_t size)
     return p;
 }
 
-/* Wrapper for Sigemptyset */
+/** @brief sigemptyset Wrapper 
+ *
+ * Wrapper for sigemptyset syscall
+ *
+ * @param set Signal set 
+ * @return handler_t
+ *
+ */
 int Sigemptyset(sigset_t *set)
 {
     if (sigemptyset(set) < 0) 
@@ -51,7 +91,16 @@ int Sigemptyset(sigset_t *set)
 	return 1;
 }
 
-/* Wrapper for Sigaction */
+/** @brief sigaction Wrapper 
+ *
+ * Wrapper for sigaction syscall
+ *
+ * @param signum Signal number
+ * @param act New action
+ * @param oldact Old action 
+ * @return True or False
+ *
+ */
 int Sigaction(int signum, const struct sigaction *act,struct sigaction *oldact)
 {
     if (sigaction(signum,act,oldact) < 0)
@@ -62,7 +111,16 @@ int Sigaction(int signum, const struct sigaction *act,struct sigaction *oldact)
 	return 1;
 }
 
-/* Wrapper for Sigprocmask */
+/** @brief Sigprocmask Wrapper 
+ *
+ * Wrapper for sigprocmask syscall
+ *
+ * @param how Signal action 
+ * @param set new signal set
+ * @param oldset Old Signal set
+ * @return True or False
+ *
+ */
 int Sigprocmask(int how, const sigset_t *set, sigset_t *oldset)
 {
 	    if (sigprocmask(how, set, oldset) < 0)
@@ -74,8 +132,15 @@ int Sigprocmask(int how, const sigset_t *set, sigset_t *oldset)
 }
 
 
+/** @brief Sigfillset Wrapper 
+ *
+ * Wrapper for sigfillset syscall
+ *
+ * @param set Signal set
+ * @return True or False
+ *
+ */
 
-/* Wrapper for Sigfillset */
 int Sigfillset(sigset_t *set)
 { 
 	    if (sigfillset(set) < 0)
@@ -86,8 +151,15 @@ int Sigfillset(sigset_t *set)
 		return 1;
 }
 
-
-/* Wrapper for Sigaddset */
+/** @brief Sigaddset Wrapper 
+ *
+ * Wrapper for sigaddset syscall
+ *
+ * @param set Signal set
+ * @param signum Signal Number
+ * @return True or False
+ *
+ */
 int Sigaddset(sigset_t *set, int signum)
 {
 	    if (sigaddset(set, signum) < 0)
@@ -98,8 +170,16 @@ int Sigaddset(sigset_t *set, int signum)
 		return 1;
 }
 
+/** @brief Sigdelset Wrapper 
+ *
+ * Wrapper for sigdelset syscall
+ *
+ * @param set Signal set
+ * @param signum Signal Number
+ * @return True or False
+ *
+ */
 
-/* Wrapper for Sigdelset */
 int Sigdelset(sigset_t *set, int signum)
 {
 	    if (sigdelset(set, signum) < 0)
@@ -110,8 +190,15 @@ int Sigdelset(sigset_t *set, int signum)
 		return 1;
 }
 
-
-/* Wrapper for Sigismember */
+/** @brief Sigdelset Wrapper 
+ *
+ * Wrapper for sigdelset syscall
+ *
+ * @param set Signal set
+ * @param signum Signal Number
+ * @return True or False
+ *
+ */
 int Sigismember(const sigset_t *set, int signum)
 {
 	    int rc;

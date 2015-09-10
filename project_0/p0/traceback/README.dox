@@ -1,0 +1,108 @@
+***************************************************************************
+					Design Document (Stack Crawler)
+***************************************************************************
+This document defines the goals,requirements and design of this traceback
+library. 
+
+The purpose of this project is to understand the impotance of backtrace in 
+real world applications. Traceback library is called for debugging in situations 
+where program errored out abruptly without providing much debugging information.
+Aim of this project is to print out the stack trace to a FILE stream. This 
+library prints out the functions (most recent to the first called function)
+along with the arguments, types and their details.
+
+Design of the document is as follows: 
+
+Traceback library should be able to print out all the functions in the stack 
+along with their types and following design logic is as follows : 
+
+Preprocessor : 
+
+1. Traceback library begins with saving the old Signal set when user program 
+invokes it (Signal set status belongs to the user program)
+2. Traceback also unblocks the SIGSEGV signal in case signal is blocked by the
+user program.
+3. It also collects the old signal action handler for the SIGSEGV and saves it 
+for restoring later.
+
+Processor:
+
+1. After pre-processor, traceback function fetches the value of %ebp register 
+using assembly instructions. 
+2. Traceback checks if the frame against the current base pointer is valid by 
+comparing the value of base pointer and value being pointed by it using the 
+following formula : 
+		%ebp < *(%ebp)
+3. If frame is not valid, traceback returns back with FATAL error.
+4. If frame is valid, traceback first evaluates the return address of the 
+function which called traceback (as per stack convention).
+
+5. Traceback validates if return address is valid.
+6. It parses the functions list (populated by python script) and looks for the
+address which is close to return address evaluated in previous step
+7. Since return address should always be higher than the actual function 
+address and max size of function should be less than 1M, the whole list is 
+iterated and the one entry with the smallest value is the considered entry 
+
+8. After selecting the entry, function name and argument list is fetched.
+If index is -1, then Function entry is displayed with the return address.
+
+9. Once the argument list is fetched, the whole list is iterated till the 
+argument list with zero length name is encountered and accordingly all details 
+wrt argument are handled for datatypes 
+(char,int,double,float,char*,char**,oid*,unknown) (discussed in detail in 
+traceback.c)
+
+10. After fetching all the details, one traceback entry is put to the FILE.
+
+11. Traceback moves the base pointer to previous frame base pointer by doing 
+following action : 
+
+$ebp = *(%ebp).
+
+12. All above steps are repeated. 
+
+13. This process continues till invalid frame is obtained and memory write check 
+fails
+
+Memory write check : In this check, I am trying to write a byte into memory 
+pointed by **ebp (Current base pointer). This check is only performed when a 
+invalid frame is encountered. As per my investigation, I saw  **ebp points to 
+code segment which is write-protected. This is my termination condition.
+
+Handling Data types : 
+
+1. String : 
+	-> Firstly, stack address is confirmed valid and then each address belonging 
+to each character is checked for validity and checked if character is printable
+	-> If not printable, then string type is represented as address (0xAddress)
+	-> If stack address for string argument is not correct, then FATAL error is 
+raised
+
+2. String array : 
+	-> Confirmation of stack address for the string array argument
+	-> If invalid address, Fatal error is raised
+	-> Then each address of string element in the array is checked for validity
+		If any element is invalid, then address of that element is printed
+	-> Each string element is passed through all the tests defined for string 
+datatype and appropriate action is taken
+
+3. Char : 
+	-> Stack address check 
+	-> Char is checked if printable. If non printable, then char is printed as 
+escaped octal
+	
+4. Void * : 
+	-> Void * address is printed as '0vAddress" instead of "0xAddress"
+
+
+Postprocessor : 
+
+1. Before exiting, tracback sets the old signal set mask and restores the action 
+for SIGSEGV handler.
+
+SIGSEGV Handler : 
+
+In sigsegv handler, I am doing siglongjmp to the location defined by sigsetjmp 
+where fault occurs. Reason for using sigsetjmp and siglongjmp is to save the 
+context of signals
