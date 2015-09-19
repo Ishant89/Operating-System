@@ -1,0 +1,1193 @@
+
+kern/fake.c,263
+int handler_install(14,331
+int putbyte(19,401
+putbytes(25,448
+set_term_color(30,492
+get_term_color(36,542
+set_cursor(41,580
+get_cursor(47,633
+hide_cursor(52,676
+show_cursor(57,700
+clear_console(62,725
+draw_char(67,751
+get_char(72,810
+readchar(78,860
+
+kern/game.c,44
+int kernel_main(46,1107
+void tick(76,1801
+
+410kern/RNG/mt19937int.c,423
+#define N 32,1831
+#define M 33,1845
+#define MATRIX_A 34,1859
+#define UPPER_MASK 35,1913
+#define LOWER_MASK 36,1975
+#define TEMPERING_MASK_B 39,2067
+#define TEMPERING_MASK_C 40,2103
+#define TEMPERING_SHIFT_U(41,2139
+#define TEMPERING_SHIFT_S(42,2179
+#define TEMPERING_SHIFT_T(43,2218
+#define TEMPERING_SHIFT_L(44,2258
+static unsigned long mt[mt46,2299
+static int mti=47,2365
+sgenrand(51,2486
+genrand(64,2874
+
+410kern/RNG/mt19937int.h,24
+#define _RAND_H30,1762
+
+410kern/boot/util_cmdline.c,152
+static char prog_name[prog_name36,1437
+static char *null_args[null_args37,1473
+static const char delim[delim39,1518
+void mb_util_cmdline(41,1562
+
+410kern/boot/head.S,507
+.global 16,363
+.global 18,418
+.global 20,475
+.global 22,528
+.global 24,581
+__kimg_start:__kimg_start28,606
+mb_header:mb_header30,621
+init_idt:init_idt37,878
+init_gdt:init_gdt42,975
+init_tss:init_tss55,1252
+df_handler:df_handler60,1359
+df_handler_loop:df_handler_loop79,1883
+_start:_start82,1925
+stuck:stuck111,2622
+blat:blat115,2672
+movs:movs141,3353
+fmsg:fmsg159,3709
+fbytes:fbytes161,3752
+pmsg:pmsg164,3821
+pbytes:pbytes166,3864
+.space 170,3979
+istack:istack171,3991
+
+410kern/boot/multiboot.h,1993
+#define _FLUX_X86_MULTIBOOT_H_22,1081
+struct multiboot_header28,1266
+	unsigned		magic;31,1323
+	unsigned		flags;34,1377
+	unsigned		checksum;37,1443
+	vm_offset_t		header_addr;40,1527
+	vm_offset_t		load_addr;41,1554
+	vm_offset_t		load_end_addr;42,1579
+	vm_offset_t		bss_end_addr;43,1608
+	vm_offset_t		entry;44,1636
+#define MULTIBOOT_SEARCH	49,1778
+#define MULTIBOOT_MAGIC	52,1862
+#define MULTIBOOT_MUSTKNOW	57,2039
+#define MULTIBOOT_PAGE_ALIGN	60,2134
+#define MULTIBOOT_MEMORY_INFO	63,2245
+#define MULTIBOOT_AOUT_KLUDGE	69,2559
+#define MULTIBOOT_VALID 73,2721
+struct multiboot_info77,2858
+	unsigned		flags;81,3007
+	vm_size_t		mem_lower;85,3142
+	vm_size_t		mem_upper;86,3165
+	unsigned char		boot_device[boot_device90,3310
+	vm_offset_t		cmdline;94,3479
+	unsigned		mods_count;98,3617
+	vm_offset_t		mods_addr;99,3640
+	    vm_size_t		tabsize;108,3854
+	    vm_size_t		strsize;109,3879
+	    vm_offset_t		addr;110,3904
+	    unsigned		reserved;111,3928
+	  } a;112,3953
+	    unsigned		num;118,4089
+	    vm_size_t		size;119,4109
+	    vm_offset_t		addr;120,4131
+	    unsigned		shndx;121,4155
+	  } e;122,4177
+	} syms;123,4185
+	vm_size_t		mmap_count;127,4286
+	vm_offset_t		mmap_addr;128,4310
+typedef struct multiboot_info mbinfo_t;131,4339
+#define MULTIBOOT_MEMORY	133,4380
+#define MULTIBOOT_BOOT_DEVICE	134,4413
+#define MULTIBOOT_CMDLINE	135,4451
+#define MULTIBOOT_MODS	136,4485
+#define MULTIBOOT_AOUT_SYMS	137,4517
+#define MULTIBOOT_ELF_SHDR	138,4553
+#define MULTIBOOT_MEM_MAP	139,4588
+#define MULTIBOOT_FLAGS_FORMAT 142,4662
+struct multiboot_module147,4894
+	vm_offset_t		mod_start;150,4988
+	vm_offset_t		mod_end;151,5013
+	vm_offset_t		string;154,5096
+	unsigned		reserved;157,5170
+struct AddrRangeDesc165,5468
+  unsigned long size;167,5491
+  unsigned long BaseAddrLow;168,5513
+  unsigned long BaseAddrHigh;169,5542
+  unsigned long LengthLow;170,5572
+  unsigned long LengthHigh;171,5599
+  unsigned long Type;172,5627
+#define MB_ARD_MEMORY 178,5748
+
+410kern/boot/util.h,41
+#define _410KERN_MULTIBOOT_UTILS_H_2,36
+
+410kern/boot/util_lmm.c,340
+#define LMM_PRI_1MB 42,1702
+#define LMM_PRI_16MB 43,1729
+#define LMM_PRI_HIGH 44,1756
+#define LMMF_1MB 51,1968
+#define LMMF_16MB 52,1993
+static struct lmm_region reg1mb,54,2019
+static struct lmm_region reg1mb, reg16mb,54,2019
+static struct lmm_region reg1mb, reg16mb, reghigh;54,2019
+#define skip(56,2071
+void mb_util_lmm 63,2268
+
+410kern/inc/asm_style.h,1106
+#define _ASM_STYLE_H_27,1059
+#define HAVE_P2ALIGN31,1116
+#define __ELF__34,1160
+#define IODELAY	39,1256
+#define S_ARG0	41,1325
+#define S_ARG1	42,1349
+#define S_ARG2	43,1373
+#define S_ARG3	44,1397
+#define FRAME	46,1422
+#define EMARF	47,1464
+#define B_ARG0	49,1485
+#define B_ARG1	50,1509
+#define B_ARG2	51,1533
+#define B_ARG3	52,1557
+#define TEXT_ALIGN	55,1594
+#define TEXT_ALIGN	57,1621
+#define DATA_ALIGN	59,1649
+#define ALIGN	60,1670
+# define P2ALIGN(68,1901
+# define P2ALIGN(70,1957
+# define P2ALIGN(72,2001
+#define	LCL(75,2040
+#define LB(77,2058
+#define EXT(79,2092
+#define LEXT(80,2114
+#define SEXT(81,2142
+#define EXT(83,2170
+#define LEXT(84,2187
+#define SEXT(85,2210
+#define GLEXT(87,2236
+#define LCLL(88,2276
+#define gLB(89,2299
+#define LBb(90,2322
+#define LBf(91,2346
+#define FUNCSYM(96,2406
+#define FUNCSYM(98,2452
+#define MCOUNT	104,2508
+#define	ENTRY(105,2586
+#define	ENTRY2(107,2702
+#define	ASENTRY(109,2794
+#define MCOUNT114,2934
+#define	ENTRY(115,2949
+#define	ENTRY2(116,3022
+#define	ASENTRY(118,3114
+#define	Entry(123,3198
+#define	DATA(124,3245
+
+410kern/inc/assert.h,51
+#define _ASSERT_H_24,1118
+#define assert(28,1183
+
+410kern/inc/kvmphys.h,89
+#define _FLUX_X86_BASE_VM_H_26,1232
+#define phystokv(40,1646
+#define kvtophys(45,1834
+
+410kern/inc/malloc.h,218
+#define _410KERN_MALLOC_H_2,27
+#define malloc(8,111
+#define memalign(9,140
+#define calloc(10,173
+#define realloc(11,206
+#define free(12,241
+#define smalloc(14,268
+#define smemalign(15,299
+#define sfree(16,338
+
+410kern/inc/stdarg.h,160
+#define _STDARG_H_2,19
+typedef __builtin_va_list va_list;9,162
+#define va_start(10,197
+#define va_end(11,245
+#define va_arg(12,289
+#define va_copy(13,335
+
+410kern/inc/stddef.h,66
+#define _STDDEF_H_2,19
+#define NULL 5,52
+#define offsetof(8,85
+
+410kern/inc/stdint.h,405
+#define LIB_STDINT_H7,118
+typedef unsigned char uint8_t;11,159
+typedef unsigned short uint16_t;12,190
+typedef unsigned long uint32_t;13,223
+typedef unsigned long long uint64_t;14,255
+typedef signed char int8_t;16,293
+typedef signed short int16_t;17,321
+typedef signed long int32_t;18,351
+typedef signed long long int64_t;19,380
+typedef int intptr_t;21,415
+typedef unsigned int uintptr_t;22,437
+
+410kern/inc/types.h,238
+#define LIB_TYPES_H8,195
+typedef unsigned int size_t;10,216
+typedef unsigned long ptrdiff_t;11,245
+typedef unsigned long vm_offset_t;15,295
+typedef unsigned long vm_size_t;16,330
+    FALSE 19,379
+    TRUE20,394
+} boolean_t;21,403
+
+410kern/lmm/lmm_add_free.c,27
+void lmm_add_free(26,1115
+
+410kern/lmm/lmm.h,281
+#define _MACH_LMM_H_27,1178
+typedef struct lmm32,1278
+	struct lmm_region *regions;regions34,1299
+} lmm_t;35,1328
+typedef struct lmm_region lmm_region_t;37,1338
+#define LMM_INITIALIZER 39,1379
+typedef unsigned int lmm_flags_t;41,1410
+typedef unsigned int lmm_pri_t;42,1444
+
+410kern/lmm/lmm_alloc_gen.c,43
+void *lmm_alloc_gen(lmm_alloc_gen26,1120
+
+410kern/lmm/lmm_alloc.c,35
+void *lmm_alloc(lmm_alloc26,1120
+
+410kern/lmm/lmm_add_region.c,29
+void lmm_add_region(26,1115
+
+410kern/lmm/lmm_find_free.c,28
+void lmm_find_free(26,1115
+
+410kern/lmm/lmm_avail.c,29
+vm_size_t lmm_avail(26,1115
+
+410kern/lmm/lmm_alloc_aligned.c,51
+void *lmm_alloc_aligned(lmm_alloc_aligned25,1095
+
+410kern/lmm/lmm_alloc_page.c,45
+void *lmm_alloc_page(lmm_alloc_page26,1122
+
+410kern/lmm/lmm_dump.c,23
+void lmm_dump(32,1235
+
+410kern/lmm/lmm_free_page.c,28
+void lmm_free_page(25,1095
+
+410kern/lmm/lmm_free.c,23
+void lmm_free(26,1115
+
+410kern/lmm/lmm_init.c,23
+void lmm_init(25,1095
+
+410kern/lmm/lmm_types.h,405
+#define _LMM_TYPES_H_25,1122
+struct lmm_region28,1206
+	struct lmm_region *next;next30,1226
+	struct lmm_node *nodes;nodes33,1304
+	vm_offset_t min;36,1399
+	vm_offset_t max;37,1417
+	lmm_flags_t flags;40,1471
+	lmm_pri_t pri;43,1566
+	vm_size_t free;46,1645
+struct lmm_node49,1666
+	struct lmm_node *next;next51,1684
+	vm_size_t size;52,1708
+#define ALIGN_SIZE	55,1729
+#define ALIGN_MASK	56,1772
+
+410kern/lmm/lmm_remove_free.c,30
+void lmm_remove_free(26,1115
+
+410kern/malloc/malloc_lmm.c,26
+lmm_t malloc_lmm 24,1081
+
+410kern/malloc/calloc.c,38
+_calloc(28,1162
+_mustcalloc(42,1350
+
+410kern/malloc/free.c,20
+void _free(24,1081
+
+410kern/malloc/malloc.c,52
+void *_malloc(_malloc26,1102
+_mustmalloc(40,1279
+
+410kern/malloc/memalign.c,35
+void *_memalign(_memalign25,1096
+
+410kern/malloc/malloc_internal.h,45
+#define _410KERN_MALLOC_INTERNALS_H_23,1083
+
+410kern/malloc/realloc.c,33
+void *_realloc(_realloc28,1204
+
+410kern/malloc/sfree.c,21
+void _sfree(27,1165
+
+410kern/malloc/smalloc.c,33
+void *_smalloc(_smalloc30,1273
+
+410kern/malloc/smemalign.c,37
+void *_smemalign(_smemalign35,1585
+
+410kern/misc/nonogram_db.c,112
+#define END 10,143
+#define LAST 11,167
+ng_layout_t ng_layouts[ng_layouts13,193
+int ng_layout_count 61,1219
+
+410kern/misc/gccisms.c,490
+#define HALF_BITS 41,2089
+#define B 42,2125
+#define H 43,2178
+#define L 44,2227
+#define HHALF(55,2656
+#define LHALF(56,2702
+typedef unsigned int u_int;58,2766
+typedef u_int digit;60,2795
+typedef long long quad_t;61,2816
+typedef unsigned long long u_quad_t;62,2878
+union uu 68,3068
+    quad_t  q;69,3079
+    u_quad_t uq;70,3124
+    int sl[sl71,3174
+    u_int   ul[ul72,3219
+#define COMBINE(76,3336
+__qdivrem(90,3763
+shl(291,9769
+__umoddi3(306,10067
+__udivdi3(318,10216
+
+410kern/misc/sokoban.c,234
+sokolevel_t level1 9,129
+sokolevel_t level2 20,262
+sokolevel_t level3 31,395
+sokolevel_t level4 44,662
+sokolevel_t level5 53,781
+sokolevel_t level6 65,977
+sokolevel_t * soko_levels[soko_levels82,1523
+int soko_nlevels 83,1612
+
+410kern/misc/nonogram_db.h,357
+#define _NONOGRAM_DB_H9,134
+#define NG_MAX_ROWS 12,200
+#define NG_MAX_COLS 15,269
+#define NG_RUN_ELTS 21,434
+#define NG_RUN_END 27,590
+#define NG_RUN_LAST 33,725
+typedef struct ng_layout 35,751
+  int rows;37,828
+  int cols;40,891
+  int row_runs[row_runs48,1134
+  int col_runs[col_runs56,1400
+} ng_layout_t;57,1429
+int ng_layout_count;60,1478
+
+410kern/misc/semisolver.c,327
+typedef char needed_t[needed_t42,1609
+static int coord_to_square(45,1720
+static int coord_to_idx(50,1887
+static int square_to_row(55,2072
+static int square_to_col(60,2267
+static int can_place(71,2626
+static void set_cell(105,3943
+static void eliminate(148,5485
+static int solve_known(194,7072
+int semisolve(226,8171
+
+410kern/misc/semisolver.h,60
+#define _SEMISOLVER_H9,137
+#define SEMI_ITERATIONS 14,252
+
+410kern/misc/sokoban.h,340
+#define _SOKOBAN_H_8,124
+#define MAX_LEVELS 10,145
+#define SOK_WALL 20,437
+#define SOK_PUSH 21,460
+#define SOK_ROCK 22,483
+#define SOK_GOAL 23,506
+typedef struct sokolevel 25,530
+  int width;26,557
+  int height;27,570
+  char * map;28,584
+} sokolevel_t;29,598
+sokolevel_t *soko_levels[soko_levels31,614
+int soko_nlevels;32,652
+
+410kern/misc/sudoku.h,149
+#define _SUDOKU_H9,140
+#define SU_BOX_SIZE 12,203
+#define SU_GRID_SIZE 15,284
+#define SU_GRID_AREA 18,385
+typedef char sudoku_t[sudoku_t26,644
+
+410kern/misc/sudokudb.c,38
+const char *sudokudb sudokudb10,166
+
+410kern/misc/sudokudb.h,85
+#define _SUDOKUDB_H9,148
+#define MAX_DIFFICULTY 12,234
+#define MAX_SUDOKUS 15,319
+
+410kern/misc/texttwist_dict.c,43
+char texttwist_dict[texttwist_dict13,307
+
+410kern/misc/texttwist_dict.h,33
+#define _TEXTTWIST_DICT_H_8,136
+
+410kern/p1test/410_test.c,81
+void wait_char(21,387
+int seconds 28,476
+void tick(30,494
+kernel_main(38,614
+
+410kern/simics/simics.S,38
+.global 4,79
+sim_call:sim_call5,96
+
+410kern/simics/simics.h,398
+#define LIB_SIMICS_H7,118
+#define SIM_IN_SIMICS 9,140
+#define SIM_MEMSIZE 10,179
+#define SIM_PUTS 11,218
+#define SIM_BREAKPOINT 12,257
+#define SIM_HALT 13,296
+#define SIM_REG_PROCESS 14,335
+#define SIM_UNREG_PROCESS 15,374
+#define SIM_REG_CHILD 16,413
+#define SIM_BOOTED 17,452
+#define lprintf 21,510
+extern void sim_printf(56,1534
+#define MAGIC_BREAK 65,1808
+#define lprintf(66,1845
+
+410kern/simics/simics_c.c,257
+int sim_in_simics(10,141
+int sim_memsize(14,206
+void sim_puts(18,267
+void sim_breakpoint(22,332
+void sim_halt(26,393
+void sim_reg_process(30,442
+void sim_reg_child(34,539
+void sim_unreg_process(38,626
+void sim_booted(42,703
+void sim_printf(46,774
+
+410kern/stdio/doprnt.c,909
+#define isdigit(140,4604
+#define Ctod(141,4650
+#define MAXBUF 143,4679
+static char digs[digs145,4744
+printnum(148,4798
+printnum_16(167,5165
+boolean_t	_doprnt_truncates 186,5494
+void _doprnt(188,5532
+                        unsigned version_low:version_low349,8353
+                        unsigned lthread:lthread350,8402
+                        unsigned task:task351,8446
+                        unsigned version_high:version_high352,8488
+                        unsigned site:site353,8537
+                        unsigned chief:chief354,8579
+                        unsigned nest:nest355,8622
+                      } tid_t;356,8663
+                    	unsigned high;358,8731
+                    	unsigned low;359,8767
+                      } lh_t;360,8802
+                    union tid_t 361,8832
+                      tid_t id;362,8866
+                      lh_t  lh;363,8898
+
+410kern/stdio/doprnt.h,38
+#define __DOPRNT_H_INCLUDED__23,1076
+
+410kern/stdio/doscan.c,17
+_doscan(45,1365
+
+410kern/stdio/doscan.h,38
+#define __DOSCAN_H_INCLUDED__23,1076
+
+410kern/stdio/hexdump.c,17
+hexdump(45,2238
+
+410kern/stdio/printf.c,185
+#define	PRINTF_BUFMAX	36,1281
+struct printf_state 38,1308
+	char buf[buf39,1330
+	unsigned int index;40,1356
+flush(44,1393
+printf_char(55,1535
+int vprintf(82,1919
+printf(98,2238
+
+410kern/stdio/putchar.c,21
+int putchar(26,1123
+
+410kern/stdio/puts.c,18
+int puts(29,1370
+
+410kern/stdio/sprintf.c,264
+#define SPRINTF_UNLIMITED 30,1079
+struct sprintf_state 31,1108
+      char *buf;buf32,1131
+      unsigned int len;33,1148
+      unsigned int max;34,1172
+savechar(38,1212
+int vsprintf(53,1442
+int vsnprintf(66,1700
+int sprintf(79,1956
+int snprintf(91,2112
+
+410kern/stdio/sscanf.c,76
+readchar(31,1090
+unchar(38,1169
+void vsscanf(45,1237
+int sscanf(53,1358
+
+410kern/stdio/stdio.h,116
+#define _FLUX_MC_STDIO_H22,1075
+int printf(31,1254
+int sprintf(34,1400
+int snprintf(36,1513
+int sscanf(40,1787
+
+410kern/stdlib/abs.c,34
+#undef abs21,881
+int abs(23,893
+
+410kern/stdlib/atol.c,11
+atol(5,59
+
+410kern/stdlib/ctype.c,292
+int isascii(19,858
+int iscntrl(24,918
+int isdigit(29,978
+int isgraph(34,1040
+int islower(39,1101
+int isprint(44,1159
+int isspace(49,1221
+int isupper(56,1356
+int isxdigit(61,1414
+int isalpha(68,1523
+int isalnum(73,1581
+int ispunct(78,1639
+int toupper(83,1698
+int tolower(88,1780
+
+410kern/stdlib/ctype.h,33
+#define _FLUX_MC_CTYPE_H_19,883
+
+410kern/stdlib/panic.c,20
+void panic(30,1253
+
+410kern/stdlib/qsort.c,153
+#define min(40,1998
+#define swapcode(45,2115
+#define SWAPINIT(56,2398
+swapfunc(60,2549
+#define swap(70,2691
+#define vecswap(78,2877
+qsort(91,3170
+
+410kern/stdlib/rand.c,105
+static unsigned seed[seed21,881
+rand(24,911
+srand(33,1054
+#define CYCLES 40,1138
+void main(42,1164
+
+410kern/stdlib/stdlib.h,44
+#define _STDLIB_H_2,19
+#define atoi(8,171
+
+410kern/stdlib/strtol.c,21
+long strtol(26,1132
+
+410kern/stdlib/strtoul.c,31
+unsigned long strtoul(26,1132
+
+410kern/string/memcmp.c,16
+memcmp(42,1618
+
+410kern/string/memset.c,16
+memset(25,1073
+
+410kern/string/rindex.c,28
+char *rindex(rindex22,894
+
+410kern/string/strcat.c,16
+strcat(28,1050
+
+410kern/string/strchr.c,29
+char *strchr(strchr24,1067
+
+410kern/string/strcmp.c,16
+strcmp(42,1618
+
+410kern/string/strcpy.c,16
+strcpy(37,1308
+
+410kern/string/strcspn.c,17
+strcspn(44,2008
+
+410kern/string/strdup.c,28
+char *strdup(strdup24,896
+
+410kern/string/string.h,35
+#define _FLUX_MC_STRING_H_22,1072
+
+410kern/string/strlen.c,16
+strlen(36,1263
+
+410kern/string/strncat.c,17
+strncat(45,2111
+
+410kern/string/strncmp.c,16
+strncmp(22,878
+
+410kern/string/strncpy.c,17
+strncpy(39,1453
+
+410kern/string/strpbrk.c,17
+strpbrk(42,1979
+
+410kern/string/strrchr.c,17
+strrchr(26,1094
+
+410kern/string/strspn.c,16
+strspn(41,1942
+
+410kern/string/strstr.c,28
+char *strstr(strstr22,894
+
+410kern/string/strtok.c,16
+strtok(38,1880
+
+410kern/x86/interrupts.c,23
+interrupt_setup(9,168
+
+410kern/x86/asm.S,1055
+.global 6,91
+lgdt:lgdt7,104
+lgdt_reload:lgdt_reload14,378
+.global 24,612
+lidt:lidt25,625
+.global 35,917
+idt_base:idt_base36,934
+.global 43,1225
+disable_interrupts:disable_interrupts44,1252
+.global 48,1283
+enable_interrupts:enable_interrupts49,1309
+.global 53,1339
+rdtsc:rdtsc54,1353
+.global 58,1379
+inb:inb59,1391
+.global 65,1451
+inw:inw66,1463
+.global 72,1523
+ind:ind73,1535
+.global 79,1596
+outb:outb80,1609
+.global 86,1673
+outw:outw87,1686
+.global 93,1750
+outd:outd94,1763
+.global 100,1829
+get_cr0:get_cr0101,1845
+.global 105,1883
+get_cr2:get_cr2106,1899
+.global 110,1937
+get_cr3:get_cr3111,1953
+.global 115,1991
+get_cr4:get_cr4116,2007
+.global 123,2121
+set_cr0:set_cr0124,2137
+set_cr0_cont:set_cr0_cont130,2358
+.global 134,2420
+set_cr2:set_cr2135,2436
+.global 140,2497
+set_cr3:set_cr3141,2513
+.global 146,2574
+set_cr4:set_cr4147,2590
+.global 152,2651
+.global 155,2716
+get_esp0:get_esp0156,2733
+.global 161,2799
+set_esp0:set_esp0162,2816
+.global 168,2905
+iodelay:iodelay169,2921
+
+410kern/x86/asm.h,24
+#define X86_ASM_H7,113
+
+410kern/x86/bcopy.S,35
+bcopy_common:bcopy_common77,1708
+
+410kern/x86/bzero.S,14
+L1:L142,726
+
+410kern/x86/cr.h,691
+#define X86_CR_H6,95
+#define CR0_PE 10,178
+#define CR0_MP 11,232
+#define CR0_EM 12,294
+#define CR0_TS 13,346
+#define CR0_ET 14,396
+#define CR0_NE 15,453
+#define CR0_WP 16,503
+#define CR0_AM 22,725
+#define CR0_NW 23,751
+#define CR0_CD 24,805
+#define CR0_PG 25,855
+#define CR3_PWT 30,1004
+#define CR3_PCD 31,1070
+#define CR4_VME 33,1132
+#define CR4_PVI 34,1197
+#define CR4_TSD 35,1266
+#define CR4_DE 36,1321
+#define CR4_PSE 37,1378
+#define CR4_PAE 38,1435
+#define CR4_MCE 39,1498
+#define CR4_PGE 40,1555
+#define CR4_PCE 41,1610
+#define CR4_OSFXSR 42,1684
+#define CR4_OSXMMEXCPT 47,1914
+#define CR4_VMXE 48,1947
+#define CR4_SMXE 49,2017
+#define CR8_TPL_MASK 51,2083
+
+410kern/x86/eflags.S,88
+.global 4,73
+get_eflags:get_eflags5,92
+.global 14,383
+set_eflags:set_eflags16,446
+
+410kern/x86/eflags.h,670
+#define X86_EFLAGS_H8,205
+#define EFL_CF 13,316
+#define EFL_RESV1 14,375
+#define EFL_PF 15,444
+#define EFL_RESV2 16,504
+#define EFL_AF 17,573
+#define EFL_RESV3 18,636
+#define EFL_ZF 19,705
+#define EFL_SF 20,763
+#define EFL_TF 21,821
+#define EFL_IF 22,893
+#define EFL_DF 23,956
+#define EFL_OF 24,1019
+#define EFL_IOPL_RING0 25,1081
+#define EFL_IOPL_RING1 26,1147
+#define EFL_IOPL_RING2 27,1215
+#define EFL_IOPL_RING3 28,1285
+#define EFL_IOPL_SHIFT 29,1355
+#define EFL_NT 30,1431
+#define EFL_RESV4 31,1491
+#define EFL_RF 32,1560
+#define EFL_VM 39,1808
+#define EFL_AC 45,1958
+#define EFL_VIF 47,1994
+#define EFL_VIP 48,2065
+#define EFL_ID 49,2139
+
+410kern/x86/idt.h,526
+#define X86_IDT_H7,104
+#define IDT_DE 9,123
+#define IDT_DB 10,186
+#define IDT_NMI 11,255
+#define IDT_BP 12,330
+#define IDT_OF 13,388
+#define IDT_BR 14,444
+#define IDT_UD 15,513
+#define IDT_NM 16,578
+#define IDT_DF 18,705
+#define IDT_CSO 19,766
+#define IDT_TS 20,842
+#define IDT_NP 21,920
+#define IDT_SS 22,988
+#define IDT_GP 23,1056
+#define IDT_PF 24,1129
+#define IDT_MF 26,1252
+#define IDT_AC 27,1315
+#define IDT_MC 28,1379
+#define IDT_XF 29,1441
+#define IDT_USER_START 31,1596
+#define IDT_ENTS 33,1672
+
+410kern/x86/timer_defines.h,228
+#define _TIME_DEFINES_H_14,429
+#define TIMER_RATE 16,455
+#define TIMER_IDT_ENTRY 18,483
+#define TIMER_PERIOD_IO_PORT 19,512
+#define TIMER_MODE_IO_PORT 20,546
+#define TIMER_SQUARE_WAVE 21,578
+#define TIMER_ONE_SHOT 22,609
+
+410kern/x86/interrupt_defines.h,132
+#define _INTERRUPT_DEFINES_H_7,146
+#define X86_PIC_DEFINITIONS10,219
+#define INT_CTL_PORT 13,269
+#define INT_ACK_CURRENT 14,307
+
+410kern/x86/keyhelp.c,488
+static short key_state 30,643
+#define KH_PRSCR_UP_SCAN 33,732
+#define KH_PRSCR_DOWN_SCAN 35,826
+#define KH_PAUSE_SCAN 37,921
+#define KH_EXTENDED_SCAN 39,1019
+static short key_internal_state 40,1054
+static int key_sequence 42,1092
+#define KHS_SHIFT_CORE 44,1122
+#define KHS_CTL_CORE 45,1192
+#define KHS_SHIFT(47,1265
+#define KHS_SHIFTCTL(49,1335
+#define KHS_SHIFTCAPSCTL(51,1433
+process_simple_scan(65,1865
+process_extended_scan(492,11132
+kh_type process_scancode(602,14105
+
+410kern/x86/keyhelp.h,1912
+#define KEYHELP_H2,18
+#define KEY_IDT_ENTRY 4,37
+#define KEYBOARD_PORT 5,64
+typedef int kh_type;18,636
+#define KH_STATE_SHIFT 21,708
+#define KH_STATE_SMASK 22,734
+#define KH_RMODS_SHIFT 23,765
+#define KH_RMODS_SMASK 24,791
+#define KH_RAWCHAR_SHIFT 28,951
+#define KH_RAWCHAR_SMASK 29,978
+#define KH_CHAR_SHIFT 30,1009
+#define KH_CHAR_SMASK 31,1033
+#define KH_STATE(36,1190
+#define KH_RMODS(38,1298
+#define KH_GETRAW(40,1407
+#define KH_GETCHAR(42,1523
+#define KH_CAPSLOCK(45,1652
+#define KH_SHIFT(47,1783
+#define KH_CTL(49,1926
+#define KH_ALT(51,2071
+#define KH_HASRAW(54,2218
+#define KH_HASDATA(56,2354
+#define KH_NUMPAD(59,2549
+#define KH_ISMAKE(62,2739
+#define KH_ISEXTENDED(68,2951
+#define KH_ISRAWEXTENDED(74,3162
+#define KH_LSHIFT_KEY 79,3274
+#define KH_RSHIFT_KEY 81,3330
+#define KH_LCONTROL_KEY 83,3387
+#define KH_RCONTROL_KEY 85,3445
+#define KH_LALT_KEY 87,3498
+#define KH_RALT_KEY 89,3552
+#define KH_CAPS_LOCK 91,3606
+#define KH_NUM_LOCK 93,3659
+#define KH_RESULT_HASRAW 112,4367
+#define KH_RESULT_HASDATA 118,4591
+#define KH_RESULT_NUMPAD 123,4853
+#define KH_RESULT_MAKE 129,5098
+enum kh_extended_e 132,5137
+  KHE_ESCAPE 136,5310
+  KHE_ESCAPE = 0x1B,x1B136,5310
+  KHE_BACKSPACE 137,5331
+  KHE_TAB 138,5355
+  KHE_ENTER 139,5373
+  KHE_UNDEFINED 148,5673
+  KHE_UNDEFINED = 0x80,x80148,5673
+  KHE_ARROW_UP,153,5960
+  KHE_ARROW_LEFT,154,5976
+  KHE_ARROW_DOWN,155,5994
+  KHE_ARROW_RIGHT,156,6012
+  KHE_LALT,159,6050
+  KHE_RALT,160,6062
+  KHE_LCTL,161,6074
+  KHE_RCTL,162,6086
+  KHE_LSHIFT,163,6098
+  KHE_RSHIFT,164,6112
+  KHE_CAPSLOCK,167,6162
+  KHE_NUMLOCK,168,6178
+  KHE_F1,171,6209
+  KHE_F2,172,6219
+  KHE_F3,173,6229
+  KHE_F4,174,6239
+  KHE_F5,175,6249
+  KHE_F6,176,6259
+  KHE_F7,177,6269
+  KHE_F8,178,6279
+  KHE_F9,179,6289
+  KHE_F10,180,6299
+  KHE_F11,181,6310
+  KHE_F12,182,6321
+  KHE_PAUSE,185,6362
+  KHE_PRINT_SCREEN,186,6375
+
+410kern/x86/misc.h,121
+#define _X86_MISC_H_2,21
+#define PF_ERRCODE_USER 7,153
+#define PF_ERRCODE_WRITE 9,233
+#define PF_ERRCODE_PROT 11,318
+
+410kern/x86/page.h,75
+#define _PAGE_H_8,96
+#define PAGE_SHIFT 12,134
+#define PAGE_SIZE 13,157
+
+410kern/x86/pic.c,148
+#define X86_PIC_DEFINITIONS6,133
+pic_init(31,1193
+pic_acknowledge(66,2301
+pic_acknowledge_any_master(81,2736
+pic_acknowledge_any_slave(90,2960
+
+410kern/x86/pic.h,2381
+#define X86_PIC_H71,2945
+#define ADDR_PIC_BASE 79,3070
+#define OFF_ICW 80,3107
+#define OFF_OCW 81,3144
+#define SIZE_PIC 82,3181
+#define MASTER_ICW 84,3219
+#define MASTER_OCW 85,3277
+#define  SLAVE_ICW 86,3335
+#define  SLAVE_OCW 87,3404
+#define ICW_TEMPLATE 98,3650
+#define LEVL_TRIGGER 100,3688
+#define EDGE_TRIGGER 101,3725
+#define ADDR_INTRVL4 102,3762
+#define ADDR_INTRVL8 103,3799
+#define SINGLE__MODE 104,3836
+#define CASCADE_MODE 105,3873
+#define ICW4__NEEDED 106,3910
+#define NO_ICW4_NEED 107,3947
+#define SLAVE_ON_IR0 117,4061
+#define SLAVE_ON_IR1 118,4098
+#define SLAVE_ON_IR2 119,4135
+#define SLAVE_ON_IR3 120,4172
+#define SLAVE_ON_IR4 121,4209
+#define SLAVE_ON_IR5 122,4246
+#define SLAVE_ON_IR6 123,4283
+#define SLAVE_ON_IR7 124,4320
+#define I_AM_SLAVE_0 126,4358
+#define I_AM_SLAVE_1 127,4395
+#define I_AM_SLAVE_2 128,4432
+#define I_AM_SLAVE_3 129,4469
+#define I_AM_SLAVE_4 130,4506
+#define I_AM_SLAVE_5 131,4543
+#define I_AM_SLAVE_6 132,4580
+#define I_AM_SLAVE_7 133,4617
+#define SNF_MODE_ENA 139,4675
+#define SNF_MODE_DIS 140,4712
+#define BUFSLAV_MODE 141,4749
+#define BUFMSTR_MODE 142,4786
+#define NONBUFD_MODE 143,4823
+#define AUTO_EOI_MOD 144,4860
+#define NRML_EOI_MOD 145,4897
+#define I8086_EMM_MOD 146,4934
+#define SET_MCS_MODE 147,4971
+#define PICM_MASK 153,5029
+#define PICS_MASK 154,5066
+#define NON_SPEC_EOI 160,5124
+#define SPECIFIC_EOI 161,5161
+#define ROT_NON_SPEC 162,5198
+#define SET_ROT_AEOI 163,5235
+#define RSET_ROTAEOI 164,5272
+#define ROT_SPEC_EOI 165,5309
+#define SET_PRIORITY 166,5346
+#define NO_OPERATION 167,5383
+#define SEND_EOI_IR0 169,5421
+#define SEND_EOI_IR1 170,5458
+#define SEND_EOI_IR2 171,5495
+#define SEND_EOI_IR3 172,5532
+#define SEND_EOI_IR4 173,5569
+#define SEND_EOI_IR5 174,5606
+#define SEND_EOI_IR6 175,5643
+#define SEND_EOI_IR7 176,5680
+#define OCW_TEMPLATE 182,5738
+#define SPECIAL_MASK 183,5775
+#define MASK_MDE_SET 184,5812
+#define MASK_MDE_RST 185,5849
+#define POLL_COMMAND 186,5886
+#define NO_POLL_CMND 187,5923
+#define READ_NEXT_RD 188,5960
+#define READ_IR_ONRD 189,5997
+#define READ_IS_ONRD 190,6034
+#define PICM_ICW1 195,6130
+#define PICM_ICW3 197,6256
+#define PICM_ICW4 198,6295
+#define PICS_ICW1 201,6408
+#define PICS_ICW3 203,6534
+#define PICS_ICW4 204,6573
+#define X86_PIC_MASTER_IRQ_BASE 210,6797
+#define X86_PIC_SLAVE_IRQ_BASE 212,6915
+
+410kern/x86/rtc.c,43
+int getrtcfield 4,43
+void gettime 10,173
+
+410kern/x86/rtc.h,382
+#define _RTC_H_2,16
+#define RTC_SECS 4,33
+#define RTC_MINS 5,53
+#define RTC_HOURS 6,73
+#define RTC_DAY 7,93
+#define RTC_MONTH 8,113
+#define RTC_YEAR 9,133
+#define RTC_PORT_OUT 11,154
+#define RTC_PORT_IN 12,180
+typedef struct time 14,207
+  int year;15,229
+  int month;16,241
+  int day;17,254
+  int hour;18,265
+  int minute;19,277
+  int second;20,291
+} time_t;21,305
+
+410kern/x86/seg.h,362
+#define X86_SEG_H10,180
+#define SEGSEL_KERNEL_TSS_IDX 12,199
+#define SEGSEL_KERNEL_CS_IDX 13,233
+#define SEGSEL_KERNEL_DS_IDX 14,267
+#define SEGSEL_USER_CS_IDX 15,301
+#define SEGSEL_USER_DS_IDX 16,335
+#define SEGSEL_TSS 18,370
+#define SEGSEL_KERNEL_CS 19,437
+#define SEGSEL_KERNEL_DS 20,502
+#define SEGSEL_USER_CS 21,567
+#define SEGSEL_USER_DS 22,630
+
+410kern/x86/video_defines.h,919
+#define _VIDEO_DEFINES_H9,186
+#define CRTC_IDX_REG 13,254
+#define CRTC_DATA_REG 14,281
+#define CRTC_CURSOR_LSB_IDX 15,309
+#define CRTC_CURSOR_MSB_IDX 16,340
+#define CONSOLE_MEM_BASE 19,400
+#define CONSOLE_WIDTH 21,434
+#define CONSOLE_HEIGHT 22,459
+#define FGND_BLACK 26,603
+#define FGND_BLUE 27,626
+#define FGND_GREEN 28,649
+#define FGND_CYAN 29,672
+#define FGND_RED 30,695
+#define FGND_MAG 31,718
+#define FGND_BRWN 32,741
+#define FGND_LGRAY 33,764
+#define FGND_DGRAY 34,805
+#define FGND_BBLUE 35,845
+#define FGND_BGRN 36,887
+#define FGND_BCYAN 37,930
+#define FGND_PINK 38,972
+#define FGND_BMAG 39,995
+#define FGND_YLLW 40,1040
+#define FGND_WHITE 41,1063
+#define BGND_BLACK 43,1087
+#define BGND_BLUE 44,1111
+#define BGND_GREEN 45,1135
+#define BGND_CYAN 46,1159
+#define BGND_RED 47,1183
+#define BGND_MAG 48,1207
+#define BGND_BRWN 49,1231
+#define BGND_LGRAY 50,1255
+#define BLINK 52,1298
+
+410kern/entry.c,116
+vm_offset_t phys_mem_va 21,452
+static int n_phys_frames 24,516
+void mb_entry(27,575
+machine_phys_frames(67,1815
+
+spec/syscall_int.h,1392
+#define _SYSCALL_INT_H13,239
+#define SYSCALL_INT 15,263
+#define FORK_INT 16,296
+#define EXEC_INT 17,329
+#define WAIT_INT 19,401
+#define YIELD_INT 20,434
+#define GETTID_INT 23,545
+#define NEW_PAGES_INT 24,578
+#define REMOVE_PAGES_INT 25,611
+#define SLEEP_INT 26,644
+#define GETCHAR_INT 27,677
+#define READLINE_INT 28,710
+#define PRINT_INT 29,743
+#define SET_TERM_COLOR_INT 30,776
+#define SET_CURSOR_POS_INT 31,809
+#define GET_CURSOR_POS_INT 32,842
+#define THREAD_FORK_INT 33,875
+#define GET_TICKS_INT 34,908
+#define MISBEHAVE_INT 35,941
+#define HALT_INT 36,974
+#define LS_INT 37,1007
+#define TASK_VANISH_INT 38,1040
+#define SET_STATUS_INT 39,1113
+#define VANISH_INT 40,1146
+#define CAS2I_RUNFLAG_INT 41,1179
+#define SYSCALL_RESERVED_START 47,1395
+#define SYSCALL_RESERVED_0 48,1434
+#define SYSCALL_RESERVED_1 49,1473
+#define SYSCALL_RESERVED_2 50,1512
+#define SYSCALL_RESERVED_3 51,1551
+#define SYSCALL_RESERVED_4 52,1590
+#define SYSCALL_RESERVED_5 53,1629
+#define SYSCALL_RESERVED_6 54,1668
+#define SYSCALL_RESERVED_7 55,1707
+#define SYSCALL_RESERVED_8 56,1746
+#define SYSCALL_RESERVED_9 57,1785
+#define SYSCALL_RESERVED_10 58,1824
+#define SYSCALL_RESERVED_11 59,1863
+#define SYSCALL_RESERVED_12 60,1902
+#define SYSCALL_RESERVED_13 61,1941
+#define SYSCALL_RESERVED_14 62,1980
+#define SYSCALL_RESERVED_15 63,2019
+#define SYSCALL_RESERVED_END 64,2058
+
+spec/contracts.h,210
+#undef ASSERT16,399
+#undef REQUIRES17,413
+#undef ENSURES18,429
+#define ASSERT(22,459
+#define REQUIRES(23,493
+#define ENSURES(24,529
+#define ASSERT(28,572
+#define REQUIRES(29,603
+#define ENSURES(30,636
+
+spec/common_kern.h,66
+#define _SPEC_COMMON_KERN_H_2,29
+#define USER_MEM_START 42,1826
+
+spec/limits.h,429
+#define LIMITS_H7,106
+#define CHAR_BIT 9,124
+#define SCHAR_MIN 11,151
+#define SCHAR_MAX 12,182
+#define UCHAR_MAX 14,211
+#define SHRT_MIN 16,240
+#define SHRT_MAX 17,273
+#define USHRT_MAX 19,304
+#define INT_MIN 21,335
+#define INT_MAX 22,384
+#define UINT_MAX 24,434
+#define LONG_MIN 26,486
+#define LONG_MAX 27,537
+#define ULONG_MAX 29,589
+#define LLONG_MIN 31,643
+#define LLONG_MAX 32,708
+#define ULLONG_MAX 34,774
+
+spec/p1kern.h,29
+#define _SPEC_P1SPEC_H_2,24
