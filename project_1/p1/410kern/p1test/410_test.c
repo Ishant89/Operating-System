@@ -15,7 +15,6 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <simics.h>
 
 /* --- Stuff and Nonsense --- */
 
@@ -31,7 +30,16 @@ int seconds = 0;
 void tick(unsigned int numTicks)
 {
     if (numTicks % 100 == 0)
+	{
       ++seconds;
+	
+	}		  
+	/*
+	if (numTicks%2 == 0)
+				putbyte('a');
+			  else 
+				putbyte('b');
+*/
 }
 
 /* --- Kernel entrypoint --- */
@@ -42,7 +50,6 @@ kernel_main(mbinfo_t *mbinfo, int argc, char **argv, char **envp)
       panic("oh noes! where are my handlers");
     }
 
-	int handle = 0 ;
     enable_interrupts();
 
     clear_console();
@@ -62,8 +69,6 @@ kernel_main(mbinfo_t *mbinfo, int argc, char **argv, char **envp)
     set_cursor(16, 25);
     printf("That took %d seconds\n", seconds);
     printf("Yay kitties! - now what if you type \"dog\"?");
-	printf("Handle is %d\n",handle);
-	MAGIC_BREAK;
     while(1)
       continue;
 }

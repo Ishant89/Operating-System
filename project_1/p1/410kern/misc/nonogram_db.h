@@ -57,6 +57,6 @@ typedef struct ng_layout {
 } ng_layout_t;
 
 extern ng_layout_t ng_layouts[];
-int ng_layout_count;
+extern int ng_layout_count;
 
 #endif /* _NONOGRAM_DB_H */

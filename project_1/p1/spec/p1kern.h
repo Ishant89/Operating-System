@@ -2,8 +2,7 @@
 #define _SPEC_P1SPEC_H_
 
 #include <common_kern.h>
-/* EDIT: To be removed */
-void test();
+
 /*********************************************************************/
 /*                                                                   */
 /* Interface for device-driver initialization and timer callback     */

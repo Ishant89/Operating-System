@@ -30,8 +30,8 @@ TABSTOP = 8
 # the object files which make up your drivers.
 ##################################################
 #
-COMMON_OBJS = fake.o timer_driver.o timer_driver_asm.o interrupt_handlers.o \
-keyboard_driver.o keyboard_driver_asm.o
+COMMON_OBJS = console_driver.o timer_driver.o timer_driver_asm.o interrupt_handlers.o \
+keyboard_driver.o keyboard_driver_asm.o 
 
 ##################################################
 # Object files from 410kern/ for just the game
@@ -48,7 +48,7 @@ keyboard_driver.o keyboard_driver_asm.o
 # multiple parts.
 ##################################################
 #
-KERN_GAME_OBJS = game.o
+KERN_GAME_OBJS = game.o game_helper.o
 
 ##################################################
 # Object files from 410kern/ for just the tester

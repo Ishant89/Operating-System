@@ -9,13 +9,6 @@
  *  @bug No known bugs.
  */
 
-#include <p1kern.h>
-
-/* Think about where this declaration
- * should be... probably not here!
- */
-void tick(unsigned int numTicks);
-
 /* libc includes. */
 #include <stdio.h>
 #include <simics.h>                 /* lprintf() */
@@ -33,8 +26,8 @@ void tick(unsigned int numTicks);
 #include <x86/asm.h>                /* enable_interrupts() */
 
 #include <string.h>
-
-#include <nonogram_db.h>
+#include <mt19937int.h>
+#include "game_helper.h"
 
 /** @brief Kernel entrypoint.
  *  
@@ -56,23 +49,21 @@ int kernel_main(mbinfo_t *mbinfo, int argc, char **argv, char **envp)
      * when you are ready.
      */
 
+	enable_interrupts();
     lprintf( "Hello from a brand new kernel!" );
 
-    lprintf( "Entries in my built-in layout database: %d!", ng_layout_count );
-
+	set_cursor(12,34);
+	game_run();	
     while (1) {
+		readchar();
+		/*if (ch != -1)
+		{
+			putbyte(ch);
+		}*/
         continue;
     }
 
     return 0;
 }
 
-/** @brief Tick function, to be called by the timer interrupt handler
- * 
- *  In a real game, this function would perform processing which
- *  should be invoked by timer interrupts.
- *
- **/
-void tick(unsigned int numTicks)
-{
-}
+

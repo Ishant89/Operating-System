@@ -11,12 +11,12 @@
 
 #include "keyboard_driver.h"
 
-#define BUFFER_ITEMS 256 
+#define BUFFER_ITEMS 4
 #define BUFFER_START_ENTRY_INDEX 0
 #define ERROR -1
 #define OK 0
-/* Buffer to store keyboard events */
-char buf[100];
+    /* Buffer to store keyboard events */
+char buf[BUFFER_ITEMS];
 
 /* Buffer iterator */
 volatile char * put_buf_iter = buf;
@@ -25,8 +25,8 @@ volatile char * put_buf_iter = buf;
 volatile char * rem_buf_iter = buf;
 
 /* Current number of buffer items */
-#define ITEMS_IN_BUFF (((put_buf_iter) - (buf)) + 1)
-#define ITEMS_READ (((rem_buf_iter) - (buf)) + 1)
+#define ITEMS_IN_BUFF ((((char*)(put_buf_iter)) - ((char*)(buf))))
+#define ITEMS_READ ((((char*)(rem_buf_iter)) -((char*) (buf))))
 
 int handler_install_keybd()
 {
@@ -59,12 +59,13 @@ void keyboard_event_handler()
 	char event_scancode = inb(KEYBOARD_PORT);
 
 	/* Add the event scancode to the buffer */
+	*put_buf_iter = event_scancode;
+	put_buf_iter++;
 	if (ITEMS_IN_BUFF >= BUFFER_ITEMS)
 	{
 		put_buf_iter = buf;
 	}
-	*put_buf_iter = event_scancode;
-	put_buf_iter++;
+
 	/*Send ack signal to PIC */
 	send_ack_pic1();	
 }
@@ -91,11 +92,13 @@ int readchar()
 		}
 		/* Removing from the buffer */
 		/* EDIT: Remove 1 later */
-		if ( ITEMS_READ >= BUFFER_ITEMS)
+		if ( ITEMS_READ >= (BUFFER_ITEMS -1))
 		{
 			rem_buf_iter = buf;
+		} else 
+		{
+			rem_buf_iter++;
 		}
-		rem_buf_iter++;
 	} else 
 	{
 		result = ERROR;
