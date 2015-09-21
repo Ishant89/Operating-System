@@ -29,6 +29,7 @@
 #include <mt19937int.h>
 #include "game_helper.h"
 
+
 /** @brief Kernel entrypoint.
  *  
  *  This is the entrypoint for the kernel.  It simply sets up the
@@ -51,17 +52,9 @@ int kernel_main(mbinfo_t *mbinfo, int argc, char **argv, char **envp)
 
 	enable_interrupts();
     lprintf( "Hello from a brand new kernel!" );
+	/* No hardcoding of dimensions */
 
-	set_cursor(12,34);
 	game_run();	
-    while (1) {
-		readchar();
-		/*if (ch != -1)
-		{
-			putbyte(ch);
-		}*/
-        continue;
-    }
 
     return 0;
 }

@@ -84,7 +84,7 @@ int is_cursor_hidden()
 
 	/* EDIT:Replace 8 with macro */
 	location = (msb << 8) + lsb;
-	//lprintf("Location is %d\n",location);
+	////lprintf("Location is %d\n",location);
 	if ( location >= HIDE_LOC_BEGIN)
 		return TRUE;
 	else 
@@ -115,7 +115,7 @@ int get_cursor_location(int row, int column)
 		 * computed from co-ordinates */
 		ASSERT(location < HIDE_LOC_BEGIN);
 		location += HIDE_LOC_BEGIN;
-		lprintf("Yes hidden and loc is %d\n",location);
+		//lprintf("Yes hidden and loc is %d\n",location);
 	}
 	REQUIRES(location >= 0 && location < HIDE_LOC_BEGIN);
 	return location;
@@ -265,7 +265,7 @@ void write_cursor_IO_coordinates(uint16_t row,uint16_t column)
 	ENSURES(row >= 0 && column >= 0);
 	ENSURES(row < CONSOLE_HEIGHT && column < CONSOLE_WIDTH);
 	uint16_t location = get_cursor_location(row,column);
-	lprintf("current location is %d\n",location);
+	//lprintf("current location is %d\n",location);
 	write_cursor_IO_ports(location);	
 }
 
@@ -334,7 +334,7 @@ void scroll_one_line()
 	if (buf == NULL)
 	{
 		return;
-		lprintf("Error in memory allocation\n");
+		//lprintf("Error in memory allocation\n");
 	}
 	const void * mem_start_cpy = (void *)CONSOLE_MEM_BASE + 2*CONSOLE_WIDTH;
 	/*Error handling later */
@@ -342,14 +342,14 @@ void scroll_one_line()
 	void * temp = memcpy(buf,mem_start_cpy,buflen);
 	if (temp == NULL)
 	{
-		lprintf("Memory to buffer failed \n");
+		//lprintf("Memory to buffer failed \n");
 		return;
 	}
 	temp = memcpy((void *)CONSOLE_MEM_BASE,(const void *)buf,buflen);
 
 	if (temp == NULL)
 	{
-		lprintf("Memory to buffer failed \n");
+		//lprintf("Memory to buffer failed \n");
 		return;
 	}
 	free(buf);
@@ -412,7 +412,7 @@ void handle_backspace_char()
 	if (location == 0 )
 		return;
 	location--;
-	//lprintf("location is %d\n",location);
+	////lprintf("location is %d\n",location);
 	row = get_row_coordinate_console(location);
 	column = get_column_coordinate_console(location);
 	/*EDIT: Change space to macro and terminal color to static macro
@@ -436,7 +436,7 @@ void handle_backspace_char()
 void handle_nonspecial_char(char ch,int color)
 {
 	uint16_t location = get_current_cursor_loc();
-	//lprintf("location is %d\n",location);
+	////lprintf("location is %d\n",location);
 	uint16_t row,column;
 	row = get_row_coordinate_console(location);
 	column = get_column_coordinate_console(location);
@@ -569,8 +569,8 @@ clear_console()
 	clear_console_mem((void*)CONSOLE_MEM_BASE,number_of_items);
 	/* Set the cursor */
 	set_cursor(ORIGIN_Y,ORIGIN_X);
-	lprintf("Curreent loc is %d\n",get_current_cursor_loc());
-	lprintf("isHiden  %d\n",is_cursor_hidden());
+	//lprintf("Curreent loc is %d\n",get_current_cursor_loc());
+	//lprintf("isHiden  %d\n",is_cursor_hidden());
 }
 
 void
@@ -581,7 +581,7 @@ draw_char( int row, int col, int ch, int color )
 		write_video_memory_column(row,col,ch,color);
 	} else 
 	{
-		lprintf("Location out of the bounds\n");
+		//lprintf("Location out of the bounds\n");
 	}
 }
 
@@ -599,153 +599,4 @@ get_char( int row, int col )
 
 void test()
 {
-	
-	int loc = get_current_cursor_loc();
-
-	/* Calculate the hide location */
-	lprintf("Hide location %d\n",HIDE_LOC_BEGIN);
-
-	/* Compute the LSB & MSB */
-	lprintf("LSB is %x and MSB is %x for number loc (%x,%d)\n",GET_LSB(loc),GET_MSB(loc),loc,loc);
-
-	/*get row coordinate */
-	lprintf("Row is %d\n",get_row_coordinate_console(loc));
-
-	/*get column coordinate */
-	lprintf("Column  is %d\n",get_column_coordinate_console(loc));
-
-	/* is cursor hidden */
-	lprintf("Cursor is hidden : %d\n",is_cursor_hidden());
-
-	/* get location */
-	lprintf("Get location is  : %d\n",get_cursor_location(12,40));
-
-	/* writing cursor */
-	write_cursor_IO_ports(1000);
-
-	/*get cursor after writing */
-	lprintf("Get cursor after writing %d\n",get_current_cursor_loc());
-	
-	/* Write at location 1000 */
-	write_video_memory_column(12,40,'I',FGND_CYAN);
-
-	/*write cursor at row and column  without hiding */
-	write_cursor_IO_coordinates(12,60);
-
-	lprintf("Get cursor before hiding %d\n",get_current_cursor_loc());
-	/*write cursor with hiding */
-	write_cursor_IO_ports(2025);
-
-	/*Get the cursor current pos after hiding */
-
-	lprintf("Get cursor after hiding %d\n",get_current_cursor_loc());
-	/*write cursor at row and column  with hiding */
-	write_cursor_IO_coordinates(12,65);
-
-	/*Get cursor expected location*/
-	lprintf("get cursor expected location %d\n",get_cursor_location(12,65));
-	/* Get cursor actual location */
-	lprintf("get cursor expected location %d\n",get_current_cursor_loc());
-	/*Repeating the above steps after moving the port back to show state */
-	lprintf("Moving the cursor back to show state \n");
-	write_cursor_IO_ports(1000);
-
-	/*Get the cursor current pos after hiding */
-
-	/* Write at location 1000 */
-	write_video_memory_column(12,40,'K',FGND_CYAN);
-	lprintf("Get cursor after unhiding %d\n",get_current_cursor_loc());
-	/*write cursor at row and column  with hiding */
-	write_cursor_IO_coordinates(12,65);
-
-	/*Get cursor expected location*/
-	lprintf("get cursor expected location %d\n",get_cursor_location(12,65));
-	/* Get cursor actual location */
-	lprintf("get cursor expected location %d\n",get_current_cursor_loc());
-
-	/* Writing cursor based on row,column*/
-	write_cursor_IO_coordinates(12,35);
-	/*Get cursor expected location*/
-	lprintf("get cursor expected location %d\n",get_cursor_location(12,35));
-	/* Get cursor actual location */
-	lprintf("get cursor expected location %d\n",get_current_cursor_loc());
-	
-	/*Writing based on video manager using location */
-
-
-
-	/* Resetting the cursor */
-	clear_console();
-	lprintf("Resetting the cursor \n");
-	write_cursor_IO_ports(2000);
-	putbyte('S');
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	write_cursor_IO_ports(2080);
-	putbyte('T');
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	write_cursor_IO_ports(2160);
-	putbyte('P');
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	/* Get cursor actual location */
-//	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-//	putbyte('S');
-	/* Get cursor actual location */
-//	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-
-//	putbyte('S');
-	/* Get cursor actual location */
-//	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-
-//	putbyte('\b');
-	/* Get cursor actual location */
-	//lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	show_cursor();
-	putbytes("Stringasdlbasdjlasladslajldkasadkaldjaldasjdklsdjaljalfjdlfdjslfjadlfkjdalsfkalkfjlfjlajfa",85);
-	/* Get cursor actual location */
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	write_cursor_IO_ports(3920);
-	putbyte('S');
-	putbyte('I');
-
-	write_cursor_IO_ports(3998);
-	putbytes("Karan",4);
-	/* Get cursor actual location */
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-//	write_cursor_IO_coordinates(24,79);
-//	putbytes("xxK",3);
-	/* Get cursor actual location */
-//	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	write_video_memory_column(0,0,'K',FGND_WHITE);
-	draw_char(0,0,'C',FGND_WHITE);
-	int * row= (int*)malloc(sizeof(int)),*col=(int*)malloc(sizeof(int));
-	show_cursor();
-	
-	get_cursor(row,col);
-	lprintf("row and col is %d and %d\n",*row,*col);
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	hide_cursor();
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	get_cursor(row,col);
-	lprintf("row and col is %d and %d\n",*row,*col);
-	free(row);
-	free(col);
-	show_cursor();
-	set_cursor(12,34);
-	lprintf("get cursor current location %d\n",get_current_cursor_loc());
-	int * color = malloc(sizeof(int));
-	get_term_color(color);
-	lprintf("Terminal color %d\n",*color);
-	set_term_color(BLINK);
-	get_term_color(color);
-	lprintf("Terminal color %d\n",*color);
-	putbyte('D');
-	draw_char(23,45,'S',FGND_GREEN);
-	char ch = get_char(23,45);
-	lprintf("Char is %c\n",ch);
-	draw_char(0,0,'L',FGND_GREEN);
-	ch = get_char(0,0);
-	lprintf("Char is %c\n",ch);
-	draw_char(24,79,'1',FGND_GREEN);
-	ch = get_char(24,79);
-	lprintf("Char is %c\n",ch);
 }
