@@ -1,7 +1,9 @@
 /** @file game_helper_private.h
  *  
  *  @brief Contains declarations and Macros
- *
+ *  
+ *  This file contains the declarations and macros 
+ *  for game_helper.c file 
  *  @author Ishant Dawer (idawer@andrew.cmu.edu)
  *  @bug No known bugs
  */

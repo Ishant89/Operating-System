@@ -2,8 +2,32 @@
  *
  *  @brief Definitions for game related functions
  *
- *  This file contains all the macros and game required
- *  variables 
+ *  This file contains the game controller function
+ *  and other helper functions which setup the linking
+ *  between different consoles found in the game
+ *  
+ *  Consoles : 
+ *  1 Title screen : 
+ *  This is the first screen where user is shown the most 
+ *  recent 5 game attempts with their flood count and time
+ *  elapsed
+ *
+ *  2. Help screen : 
+ *  User can press 'h' to enter into the help menu where instructions
+ *  are passed to the user and can go back to title by pressing 'k'
+ *
+ *  3. Options screen:
+ *
+ *  User needs to specify board size and number of colors to play with 
+ *  That is done by pressing options (1-5) first time for board and then  
+ *  for number of colors 
+ *
+ *  4. Game screen:
+ *
+ *  User can move aroung by pressing w,a,s,d to move across and space to 
+ *  mark the block. User can see help menu by pressing 'h'
+ *  User can pause and screen will be obscured 
+ *  User can quit by pressing 'q' 
  *
  *  @author Ishant Dawer (idawer@andrew.cmu.edu)
  *  @bug No known bugs
@@ -11,6 +35,17 @@
 
 #include "game_helper.h"
 #include "game_helper_private.h"
+
+/** @brief Wait for the input character
+ *  
+ *  Wait char waits for input character with the 
+ *  input character (ch)
+ *  Till then, it is blocked
+ *
+ *  @param char ch
+ *  @return void
+ */
+
 
 void wait_char(char ch)
 {
@@ -20,6 +55,16 @@ void wait_char(char ch)
 		continue;
 	}
 }
+
+/** @brief Wait for any key 
+ *
+ *  This function blocks execution till any 
+ *  key is pressed and gives back the key which is 
+ *  pressed
+ *
+ *  @param none 
+ *  @return char
+ */
 
 char wait_key_press()
 {
@@ -32,8 +77,12 @@ char wait_key_press()
 }
 /** @brief Tick function, to be called by the timer interrupt handler
  * 
- *  In a real game, this function would perform processing which
- *  should be invoked by timer interrupts.
+ *  This function helps in following actions : 
+ *
+ *  1. This is used for running the timer
+ *  2. This is used for blinking the cursor
+ *
+ *  @param numTicks Number of timer interrupts  
  *
  **/
 void tick(unsigned int numTicks)
@@ -71,7 +120,14 @@ void tick(unsigned int numTicks)
     }
 }
 
-
+/** @brief Clear one row 
+ *
+ *  Clears one row with a string with 
+ *  a default black bg and white fg
+ *
+ *  @param row row to be cleared
+ *  @return void
+ */
 void clear_string_row(int row)
 {
 	int i = ROW_BEGIN_INDX;
@@ -81,11 +137,34 @@ void clear_string_row(int row)
 	}
 }
 
+/** @brief Write string to a particular row and column
+ *
+ *  Writes a string to a location on the console defined 
+ *  by row & column (row,column)
+ *
+ *  @param row row
+ *  @param column column 
+ *  @param str string to write
+ *
+ *  @return void
+ */
+
 void put_str(int row,int column,char * str)
 {
 	set_cursor(row,column);
 	putbytes(str,strlen(str));
 }
+
+/** @brief Choose the background color for the box
+ *
+ *  This function takes in the random integer and gets
+ *  a background color for the box 
+ *
+ *  @param random random integer
+ *  @param num_colors number of colors
+ *
+ *  @return uint8_t
+ */
 
 uint8_t choose_bg_color(unsigned long random,int num_colors)
 {
@@ -124,12 +203,21 @@ uint8_t choose_bg_color(unsigned long random,int num_colors)
 			break;
 
 		case 7:
-			output= BGND_BRWN;
-			//output= BGND_LGRAY|BGND_BRWN;
+			output= BGND_LGRAY|BGND_BRWN;
 			break;
 	}
 	return output;
 }
+
+/** @brief Draws the sidebar of the screen
+ *  
+ *  This function designs the sidebar of the screen 
+ *  with help menu, quit option & others
+ *
+ *  @param none 
+ *  @return void
+ */
+
 void draw_screen_sidebar()
 {
 	/*Print timer menu*/
@@ -186,6 +274,19 @@ void draw_screen_sidebar()
 	set_cursor(actual_cursor_row,actual_cursor_col);
 }
 
+/** @brief generates game panel 
+ *  This function does following :
+ *
+ *  1. It generates game panel of box x by x dimension 
+ *  with number of colors and all boxes hve random colors 
+ *  and sets the cursor finally to the top left element
+ *
+ *  @param len length 
+ *  @param width witdth 
+ *  @return colors
+ */
+
+
 void draw_game_panel(uint8_t len, uint8_t width,uint8_t num_colors)
 {
 	int i,j,block_color,item_index=0;
@@ -202,9 +303,6 @@ void draw_game_panel(uint8_t len, uint8_t width,uint8_t num_colors)
 	end_x = start_x + width + MINUS_ONE;
 	end_y = start_y + len + MINUS_ONE;
 
-	/* Generate random numbers */
-	/* Seed generation */
-	//random_generator();
 	/* Generate a number */
 	for (i = start_x - 1; i <= end_x + 1; i++)
 	{
@@ -252,6 +350,7 @@ void draw_game_panel(uint8_t len, uint8_t width,uint8_t num_colors)
 	show_cursor();
 }
 
+/** @brief Handles the upward movement */
 int move_up(int row)
 {
 	/*Show cursor if hidden */
@@ -262,6 +361,7 @@ int move_up(int row)
 	return row;
 }
 
+/** @brief Handles the left movement */
 int move_left(int col)
 {
 	if ((col - 1) >= start_x)
@@ -271,6 +371,7 @@ int move_left(int col)
 	return col;
 }
 
+/** @brief Handles the downward movement */
 int move_down(int row)
 {
 	if ((row + 1) <= end_y)
@@ -280,6 +381,7 @@ int move_down(int row)
 	return row;
 }
 
+/** @brief Handles the right movement */
 int move_right(int col)
 {
 	if ((col + 1) <= end_x)
@@ -288,6 +390,14 @@ int move_right(int col)
 	}
 	return col;
 }
+
+/** @brief Get the element background color 
+ *  
+ *  This gets the element color by tapping on it
+ *
+ *  @param row row
+ *  @param col col
+ */
 
 int get_elem_bg_color(int row,int col)
 {
@@ -299,6 +409,16 @@ int get_elem_bg_color(int row,int col)
 	color = game_state_buf[elem_index];
 	return color;
 }	
+/** @brief Change the background color 
+ *  
+ *  This updates the block with a new color 
+ *  @param row row 
+ *  @param col column 
+ *  @param color color 
+ *
+ *  @return void 
+ */
+
 void update_elem_bg_color(int row,int col,int color)
 {
 	int elem_index,elem_row,elem_col;
@@ -308,6 +428,16 @@ void update_elem_bg_color(int row,int col,int color)
 	game_state_buf[elem_index] = color;
 }
 
+/** @brief Reccurisve function call to flood colors
+ *
+ *  This function recursively looks for elements which are 
+ *  reachable and changes the color of all those elements 
+ *  
+ *  @param row row
+ *  @param column column 
+ *  @param new_color color new
+ *  @param old_color old color
+ */
 void flood_it(int row,int column,int new_color,int old_color)
 {
 	/*Get the old color associated with this element */
@@ -343,6 +473,14 @@ void flood_it(int row,int column,int new_color,int old_color)
 	}
 }
 
+/** @brief Checks if the game is over
+ *  
+ *  Checks if the game is over 
+ *
+ *  @param top_elem_color Top left element 
+ *  @return void
+ */
+
 int is_game_over(int top_elem_color)
 {
 	int item_index = 0;
@@ -364,6 +502,15 @@ int is_game_over(int top_elem_color)
 	else 
 		return FALSE;
 }
+
+/** @brief Flood operation initiator
+ *
+ *  This function initiates flood operation and checks 
+ *  if the game is over 
+ *
+ *  @param color Color with which it is to be flooded
+ */
+
 
 void mark(int color)
 {
@@ -398,6 +545,11 @@ void mark(int color)
 	}
 	/* Else no op */
 }
+/** @brief Pause operation 
+ *
+ *  It pauses the game, stops the timer 
+ *  and obscures the game panel 
+ */
 
 void pause_op()
 {
@@ -441,6 +593,12 @@ void pause_op()
 	}
 }
 
+/** @brief Quit operation 
+ *
+ *  Quits the game and goes back to title screen
+ */
+
+
 void quit_op()
 {
 	char ch = 'y';
@@ -451,6 +609,13 @@ void quit_op()
 	quit = TRUE;
 	start = FALSE;
 }
+
+
+/** @brief Help menu screen 
+ *  
+ *  This function helps in generating help menu screen where 
+ *  all instructions on how to play are displayed
+ */
 
 void help_menu_game_screen()
 {
@@ -525,7 +690,20 @@ void help_menu_game_screen()
 	show_cursor();
 	
 }
-
+/** @brief Moves the cursor based on input 
+ *  
+ *  This function gets a character and moves the cursor in the 
+ *  panel accordingly 
+ *
+ *  w-> move upward
+ *  a-> move left
+ *  d-> move right 
+ *  s-> move left
+ *  h-> help 
+ *  q-> quit 
+ *
+ *  @param ch input character
+ */
 void move_cursor(char ch)
 {
 	int row,col;
@@ -571,7 +749,11 @@ void move_cursor(char ch)
 	}
 	set_cursor(row,col);
 }
-
+/** @brief help menu from title screen
+ *  
+ *  Press 'h' to invoke this function from title screen
+ *  and press 'k' to go back to the title screen
+ */
 int help_menu()
 {
 	int row,column,status;
@@ -597,6 +779,13 @@ int help_menu()
 
 }
 
+/** @brief generate title screen 
+ *  
+ *  This function appears first when the game starts 
+ *  It lists down the most recent scores 
+ *
+ *  You can press 'b' to move to options page 
+ */
 
 void title_screen()
 {
@@ -640,6 +829,7 @@ void title_screen()
 
 }
 
+/** @brief Select board size and color by pressing (1-5) twice*/
 int select_board_size_and_color()
 {
 	/* Press options 1-5 to select board size*/
@@ -723,6 +913,10 @@ int select_board_size_and_color()
 	return OK; 
 }
 
+/** @brief Options page
+ * generate the game options page to select board size and 
+ * num_of_colors
+ */
 void get_game_options_page()
 {
 	int row,column;
@@ -782,17 +976,39 @@ void get_game_options_page()
 	}
 }
 
+/** @brief Finish options 
+ *  
+ *  After finishing the game successfully 
+ *  this function can take back to title screen
+ *  by pressing 'r'
+ */
 void handle_finish()
 {
 	set_cursor(end_y + 5, start_x-10);
 	printf("Successfully completed. Press 'r' to restart the game");
 }
 
+/** @brief Fail options 
+ *  
+ *  After failing the game 
+ *  this function can take back to title screen
+ *  by pressing 'r'
+ */
 void handle_fail()
 {
 	set_cursor(end_y + 5, start_x-10);
 	printf("Unsuccessfull Attempt. Press 'r' to restart the game");
 }
+
+
+/** @brief Game controller 
+ *  
+ *  This is the main controller which will drive all the 
+ *  above functions. 
+ *  This will be invoked from the kernel 
+ *  It brings up the gaming panel, title screen, options page 
+ *  It presents back the title screen back after completing the game
+ */
 
 void game_run()
 {

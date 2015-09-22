@@ -30,16 +30,7 @@ int seconds = 0;
 void tick(unsigned int numTicks)
 {
     if (numTicks % 100 == 0)
-	{
       ++seconds;
-	
-	}		  
-	/*
-	if (numTicks%2 == 0)
-				putbyte('a');
-			  else 
-				putbyte('b');
-*/
 }
 
 /* --- Kernel entrypoint --- */

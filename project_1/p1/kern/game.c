@@ -5,7 +5,7 @@
  *
  *  It sets up the drivers and starts the game.
  *
- *  @author Michael Berman (mberman)
+ *  @author Ishant Dawer (idawer)
  *  @bug No known bugs.
  */
 
@@ -52,7 +52,8 @@ int kernel_main(mbinfo_t *mbinfo, int argc, char **argv, char **envp)
 
 	enable_interrupts();
     lprintf( "Hello from a brand new kernel!" );
-	/* No hardcoding of dimensions */
+/* This is the game controller function. Kernel passes the control to this 
+ * function */
 
 	game_run();	
 

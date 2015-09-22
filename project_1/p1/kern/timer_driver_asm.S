@@ -8,7 +8,7 @@
  *  @author Ishant Dawer (idawer@andrew.cmu.edu)
  */
 
-
+/** @brief Global declaration for Assembly wrapper */
 .global timer_wrapper_asm
 
 timer_wrapper_asm:

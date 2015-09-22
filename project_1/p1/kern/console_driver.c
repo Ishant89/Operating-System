@@ -1,41 +1,93 @@
-/** @file fake.c 
+/** @file console_driver.c
  *
- *  @brief Skeleton implementation of device-driver library.
- *  This file exists so that the "null project" builds and
- *  links without error.
+ *  @brief Implementation of Console device library
+ *  
+ *  This file contains all library functions required for console
+ *  library. Some of the examples are : get_char, putbyte, putbytes
+ *  explained below. 
  *
- *  @author Harry Q. Bovik (hbovik) <-- change this
- *  @bug This file should shrink repeatedly AND THEN BE DELETED.
+ *  Console is a memory-mapped device with console width = 80 and 
+ *  console height = 25.
+ *  Cursor is I/O mapped device with 16-bit I/O port.
+ *
+ *  Cursor can be hidden and shown as per the requirement.
+ *  There is a function which will implement this with following 
+ *  consideration: 
+ *	Total number of elements are : 25 * 80 = 2000.
+ *	
+ *	Cursor Location : 
+ *
+ *	Cursor location is the location to which a (row,column) coordinate was
+ *	mapped. E.g. Location 0 of cursor was mapped to (0,0) coordinate on console
+ *
+ *	Memory-mapped Addressing : 
+ *
+ *	Memory cells has one byte for content and other byte for color. 
+ *	Memory cells were linerally mapped to (row,column) co-ordinate of console
+ *	E.g. (0,0) corresponed to Base memory of I/O port and increasing in 
+ *	row-major form both were linked together. 
+ *
+ *	Cursor-Memory Mapping:
+ *	Cursor (location 0) was mapped to 0,0 coordinate on console and similarly,
+ *	memory is mapped to console. Hence, they were related in the same way.
+ *	
+ *  HIDDEN:
+ *	
+ *	Cursor is made hidden by adding 2000 to its current value.
+ *	therefore, the location of the cursor does not give accurate
+ *	infomartion of the memory mapped I/O cell. Moreover, everytime
+ *	we perform write to cursor or to memory, we calculate (row,column)
+ *	co-ordinate from the location of the cursor. 
+ *
+ *	If cursor is > 2000 (means hidden), we compute row,column by reducing
+ *	the current location by 2000 (which was the location of the cursor before
+ *	it was hidden)
+ *
+ *	Not HIDDEN:
+ *	
+ *	Cursor is hidden if its location is more than 2000 in this case. 
+ *	It is not hidden otherwise. Location is translated to row,column
+ *	as explained above. 
+ *
+ *
+ *
+ *  There are functions which take care
+ *
+ *  @author Ishant Dawer (idawer)
+ *  @bug No known bugs
  */
 
-#include <p1kern.h>
-#include <stdio.h>
-#include <simics.h>
+#include <p1kern.h> /*Library header file with drivers(timer,keybd,console)*/
+#include <stdio.h>/* Std I/O*/
+#include <simics.h> /*Simics debugging library */
 #include <contracts.h>
-#include <stdint.h>
-#include <asm.h>
-#include <video_defines.h>
-#include <string.h>
+#include <stdint.h> /*Contains stdint */
+#include <asm.h> /*Contains all assembly funcitons*/
+#include <video_defines.h>/* Contains all constants related to console */
+#include <string.h>/*Contains string related functions*/
 #include <malloc.h>
 
 #define TRUE 1 
 #define FALSE 0 
-#define ORIGIN_X 0
-#define ORIGIN_Y 0
-#define ERROR -1
-#define SUCCESS 0
-#define BEGIN_COLOR 0x00
+#define ORIGIN_X 0 /*X-coordinate begin */
+#define ORIGIN_Y 0 /* Y-cooridnate begin */
+#define ERROR -1 /*Error code */
+#define SUCCESS 0 /* Success code */
+#define BEGIN_COLOR 0x00 /*Color range begin */
 #define END_COLOR 0x8F
-#define SPACE 0x20
+#define SPACE 0x20 /* Space character */
+#define EIGHT 8
 
-#define CLEAR_CHAR ((FGND_WHITE)|(BGND_BLACK))
+#define CLEAR_CHAR ((FGND_WHITE)|(BGND_BLACK)) /* Clear character */
 
 /* Terminal color vairable */
-uint8_t terminal_color = FGND_WHITE | BGND_BLACK;
+/** @brief Terminal color variable */
+uint8_t terminal_color = FGND_WHITE | BGND_BLACK; /*Default terminal color*/
 
 /** @brief Hide location of cursor
  *
- * This macro places the cursor at the location
+ * This macro defines the first hidden location for cursor
+ *  i.e 2000 in this case
  *
  * @return Location
  */
@@ -68,7 +120,9 @@ uint8_t terminal_color = FGND_WHITE | BGND_BLACK;
 /** @brief Cursor is hidden 
  *
  * This function is to determine if the cursor is hidden 
- * or not 
+ * or not by looking at the value of the location from 
+ * cursor I/O ports. 
+ * If location is above 2000, then cursor is hidden   
  *
  * @return True or False
  */
@@ -82,25 +136,25 @@ int is_cursor_hidden()
 	outb(CRTC_IDX_REG,CRTC_CURSOR_MSB_IDX);
 	msb =  inb(CRTC_DATA_REG);
 
-	/* EDIT:Replace 8 with macro */
-	location = (msb << 8) + lsb;
-	////lprintf("Location is %d\n",location);
+	location = (msb << EIGHT) + lsb;
 	if ( location >= HIDE_LOC_BEGIN)
 		return TRUE;
 	else 
 		return FALSE;
 }
 
-/** @brief Get cursor ideal location 
+/** @brief Get cursor original location 
  *
- * This is used to get ideal location of the cursor based 
- * on the (row,column) coordinates
+ * This is used to get actual location of the cursor based 
+ * on the (row,column) coordinates. It takes into account the fact 
+ * that if cursor is hidden, then it adds 2000 while computing the 
+ * ideal location from coordinates
  *
  * @param row row (y-coordinate)
  *
  * @param col column (x co-ordinate)
  *
- * @return Int
+ * @return int Location of the cursor
  */
 
 int get_cursor_location(int row, int column)
@@ -121,7 +175,7 @@ int get_cursor_location(int row, int column)
 	return location;
 }
 
-/** @brief Get Co-ordinates from the location 
+/** @brief Get Console/Memory co-ordinates from cursor location 
  *
  * This function is used to fetch the co-ordinates of the 
  * memory from the location of the cursor 
@@ -162,6 +216,9 @@ short get_row_coordinate_console(int location)
  * memory from the location of the cursor 
  * 
  * Gets column from the same location as cursor  
+ *
+ * If cursor is hidden, cursor's location is translated to its ideal
+ * location by subtracting 2000 in this case and gets the co-ordinates.
  * @param location 16-bit integer (Cursor location)
  *
  * @return short 16-bit integer (LSB is column,MSB is row)
@@ -181,7 +238,6 @@ short get_column_coordinate_console(int location)
 	}
 
 
-	/* EDIT: Replace 0 with macro*/
 	/* Location == 0 means console is clear with no character */
 	if (location < 0 )
 		return 0;
@@ -197,7 +253,7 @@ short get_column_coordinate_console(int location)
 /** @brief Get current location of the cursor
  *
  * This function is used to find the current location of
- * the cursor 
+ * the cursor and it reads from the cursor ports 
  *
  * This gives unreformed location (both hidden or show)
  * @return uint16_t
@@ -211,20 +267,20 @@ uint16_t get_current_cursor_loc()
 	outb(CRTC_IDX_REG,CRTC_CURSOR_MSB_IDX);
 	msb = inb(CRTC_DATA_REG);
 	
-	/*EDIT: Replace 8 with macro */
-	location = (msb << 8) + lsb;
+	location = (msb << EIGHT) + lsb;
 	return location;
 }
 
 /** @brief Write cursor ports for location 
  *
  * This function is used to write cursor based on 
- * the location 
+ * the location of the cursor. 
+ * 
+ * Writes to both cursor location (both hidden or show)
  *
  * @param location Location of the cursor
  * 
- * Writes to unreformed location (both hidden or show)
- * @return Void 
+ * @return void 
  */
 
 void write_cursor_IO_ports(uint16_t location)
@@ -243,14 +299,14 @@ void write_cursor_IO_ports(uint16_t location)
 
 /** @brief write cursor at a coordinate
  *
- * This function is used to set cursor at a particular 
- * coordinate 
+ * This function set the cursor at the 
+ * particular (row,column) co-ordinate.
  *
  * @param row Row
  *
  * @param column Column 
  *
- * @return Void 
+ * @return void 
  */
 
 
@@ -273,12 +329,13 @@ void write_cursor_IO_coordinates(uint16_t row,uint16_t column)
 /** @brief write video manager memory 
  *
  * This function is used to write to a specific memory location
- * when a co-ordinate is given 
+ * of the memory-mapped console I/O when a co-ordinate of that
+ * console is given.
  *
  * @param row Row (x-coordinate)
  * @param column Column (y-coordinate)
  *
- * @return Void 
+ * @return void 
  */
 void write_video_memory_column(int row, int column, char data,int color)
 {
@@ -298,7 +355,8 @@ void write_video_memory_column(int row, int column, char data,int color)
 /** @brief Clear console 
  *
  * This function is used to clear console for n number of 
- * characters starting from address 
+ * characters starting from address which is an input to 
+ * this function
  *
  * @param addr Address
  * @param num_char Characters
@@ -324,6 +382,10 @@ void clear_console_mem(void * addr, int num_char)
  *
  * This function is to push the data up when the line wraps
  *
+ * It clears the memory contents of first line on the console
+ * and shifts the remaining elements in the backward direction.
+ * Finally, it frees the last line.
+ *
  * @return Void 
  */
 
@@ -334,22 +396,18 @@ void scroll_one_line()
 	if (buf == NULL)
 	{
 		return;
-		//lprintf("Error in memory allocation\n");
 	}
 	const void * mem_start_cpy = (void *)CONSOLE_MEM_BASE + 2*CONSOLE_WIDTH;
-	/*Error handling later */
 
 	void * temp = memcpy(buf,mem_start_cpy,buflen);
 	if (temp == NULL)
 	{
-		//lprintf("Memory to buffer failed \n");
 		return;
 	}
 	temp = memcpy((void *)CONSOLE_MEM_BASE,(const void *)buf,buflen);
 
 	if (temp == NULL)
 	{
-		//lprintf("Memory to buffer failed \n");
 		return;
 	}
 	free(buf);
@@ -361,7 +419,11 @@ void scroll_one_line()
 
 /** @brief Handle '\n' character 
  *
- * This function is used to handle the case when newline is pressed
+ * This function is used to handle a newline character is pressed
+ * wrt cursor location 
+ * Functions:
+ *
+ * It increments the row by one and sets the column to zero.
  *
  * @return VOID 
  */
@@ -384,7 +446,12 @@ void handle_newline_char()
 
 /** @brief handle '\r' character 
  *
- * This function is used to handle '\r' character 
+ * This function is used to handle '\r' character
+ * wrt cursor location.
+ * Functions: 
+ *
+ * It sets the current column to zero
+ * It keeps the row as it is. 
  *
  * @return VOID 
  */
@@ -401,7 +468,11 @@ void handle_carriage_char()
 /** @brief handle backspace character
  *
  * This function is used to handle backspace character
- *
+ * wrt cursor location.
+ * 
+ * Functions: 
+ * 1. This function decrements the column by 1 
+ * 2. This keeps the row as it is.
  * @return VOID 
  */
 
@@ -412,11 +483,8 @@ void handle_backspace_char()
 	if (location == 0 )
 		return;
 	location--;
-	////lprintf("location is %d\n",location);
 	row = get_row_coordinate_console(location);
 	column = get_column_coordinate_console(location);
-	/*EDIT: Change space to macro and terminal color to static macro
-	 * in case of backspace */
 	write_video_memory_column(row,column,SPACE,terminal_color);
 	write_cursor_IO_coordinates(row,column);
 }
@@ -426,17 +494,21 @@ void handle_backspace_char()
  * This function is used to print a character other
  * than special characters 
  *
+ * Functions: 
+ * 1. It finds the location of the cursor
+ * 2. Writes character to its location 
+ * 3. Increments the cursor location
+ *
  * @param char Character 
  *
  * @param color Color 
  *
- * @return Void 
+ * @return void 
  */
 
 void handle_nonspecial_char(char ch,int color)
 {
 	uint16_t location = get_current_cursor_loc();
-	////lprintf("location is %d\n",location);
 	uint16_t row,column;
 	row = get_row_coordinate_console(location);
 	column = get_column_coordinate_console(location);
@@ -455,6 +527,17 @@ void handle_nonspecial_char(char ch,int color)
 	write_cursor_IO_coordinates(row,column);
 }
 
+/*
+ * All declarations and comments are in p1kern.h
+ */
+
+/*
+ * Console library functions 
+ */
+
+/*
+ * Writes a character to the cursor location
+ */
 
 int putbyte( char ch )
 {
@@ -476,6 +559,10 @@ int putbyte( char ch )
 	return ch; 
 }
 
+/*
+ * Writes a string of length len to the location 
+ */
+
 void 
 putbytes( const char *s, int len )
 {
@@ -493,6 +580,10 @@ putbytes( const char *s, int len )
 	return ;
 }
 
+/*
+ * Sets the terminal color after which the 
+ * characters will be print of color 'color' 
+ */
 
 int
 set_term_color( int color )
@@ -505,6 +596,10 @@ set_term_color( int color )
 	return ERROR;
 }
 
+/*
+ * Gets the terminal color of the console 
+ */
+
 void
 get_term_color( int *color )
 {
@@ -512,6 +607,9 @@ get_term_color( int *color )
 	*color = color1;
 }
 
+/* 
+ * set the cursor to console's co-ordinate
+ * */
 int
 set_cursor( int row, int col )
 {
@@ -525,6 +623,11 @@ set_cursor( int row, int col )
 	return ERROR;
 }
 
+/*
+ * Gets the co-ordinates of the location 
+ * where cursor is located 
+ */
+ 
 void
 get_cursor( int *row, int *col )
 {
@@ -536,6 +639,9 @@ get_cursor( int *row, int *col )
 	*col = column1;
 }
 
+/*
+ * Hides the cursor by adding 2000 to it
+ */
 void
 hide_cursor()
 {
@@ -548,6 +654,10 @@ hide_cursor()
 	}
 }
 
+/*
+ * Makes the cursor appear by reducing its value
+ * by 2000
+ */
 
 void
 show_cursor()
@@ -562,6 +672,10 @@ show_cursor()
 
 }
 
+/*
+ * Clears the console 
+ */
+
 void 
 clear_console()
 {	
@@ -573,6 +687,10 @@ clear_console()
 	//lprintf("isHiden  %d\n",is_cursor_hidden());
 }
 
+/*
+ * Draws the character with color 'color' at the 
+ * location defined by console co-ordinate
+ */
 void
 draw_char( int row, int col, int ch, int color )
 {
@@ -585,6 +703,10 @@ draw_char( int row, int col, int ch, int color )
 	}
 }
 
+/*
+ * Gets the character from console location 
+ */
+
 char
 get_char( int row, int col )
 {
@@ -595,8 +717,4 @@ get_char( int row, int col )
 		location -= HIDE_LOC_BEGIN;
 	ch = *(char*)(CONSOLE_MEM_BASE + 2*location);
 	return ch;
-}
-
-void test()
-{
 }

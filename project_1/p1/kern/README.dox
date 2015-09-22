@@ -1,0 +1,112 @@
+===========================================================================
+					DEVICE DRIVER LIBRARY 
+===========================================================================
+
+CONSOLE Driver : 
+
+Files: console_driver.c
+
+
+This file contains all library functions required for console library. 
+Some of the examples are : get_char, putbyte, putbytes explained below. 
+
+Console is a memory-mapped device with console width = 80 and console height = 25.
+Cursor is I/O mapped device with 16-bit I/O port.
+
+Cursor can be hidden and shown as per the requirement.There is a function which 
+will implement this with following consideration: Total number of elements are : 25 * 80 
+= 2000.
+
+Cursor Location : 
+
+Cursor location is the location to which a (row,column) coordinate was
+mapped. E.g. Location 0 of cursor was mapped to (0,0) coordinate on console
+
+Memory-mapped Addressing : 
+
+Memory cells has one byte for content and other byte for color. 
+Memory cells were linerally mapped to (row,column) co-ordinate of console
+E.g. (0,0) corresponed to Base memory of I/O port and increasing in 
+row-major form both were linked together. 
+
+Cursor-Memory Mapping:
+Cursor (location 0) was mapped to 0,0 coordinate on console and similarly,
+memory is mapped to console. Hence, they were related in the same way.
+
+HIDDEN:
+
+Cursor is made hidden by adding 2000 to its current value.
+therefore, the location of the cursor does not give accurate
+infomartion of the memory mapped I/O cell. Moreover, everytime
+we perform write to cursor or to memory, we calculate (row,column)
+co-ordinate from the location of the cursor. 
+
+If cursor is > 2000 (means hidden), we compute row,column by reducing
+the current location by 2000 (which was the location of the cursor before
+it was hidden)
+
+handling special characters : 
+
+1. newline character : Cursor is moved to next row and column is set to 0.
+2. backspace character : Cursor is moved to previous column and prev character 
+is cleared
+3. carriage : Cursor is moved to column = 0 in the same row.
+
+
+KEYBOARD Driver : 
+
+Files : keyboard_driver.h,keyboard_driver.c,keyboard_driver_asm.S
+
+Keyboard is an interupt driver I/O wherein user types and processor is 
+interrupted and executes the handler installed in the IDT table 
+
+Objective : 
+
+1. Keyboard interrupt handler is installed in the IDT table as a trap gate.
+2. Keyboards handler creates a circular buffer and writes into it 
+3. Keyboard handler does the follwoing tasks:
+	- It gets the keyboard event and stores it in the circular buffer                        
+	- Readchar library reads it from the same buffer and moves ahead
+
+Avoid Concurrency : 
+
+To avoid the concurrency while reading and writing to the buffer is by 
+maintaining separate pointers to write and read namely: put_buf_write
+and rem_buf_write and properly scheduling across them
+
+1. Put_buf_write can write in the buffer freely which is always invoked by 
+keyboard interrupt handler
+
+2. The only restriction to put_buf_write pointer is that it will stop writing 
+into the buffer if the next location is already pointed to by read_ptr who will 
+read the event at sometime in future or just now. This case arises when 
+put_buf_write makes a circular rotations and will try to overwrite the date 
+being read by read_ptr. In that case no more events will be put in buffer until
+read becomes active 
+
+3. Read_buf_write can read from the buffer till it reaches the position which is 
+pointed by put_buf_write.
+
+Above scheduling and two pointer's implementation replaces the need of disabling 
+interrupts which is a risky affair as large keyboard events will result in 
+dropping many timer and keyboard events.
+
+TIMER Driver : 
+
+Timer driver was installed in the similar fashion as keyboard driver with a 
+support for callback function 
+
+
+GAME : 
+
+Using all the above drivers, game was designed. the purpose of the game is to 
+flood all the boxes which are reachable from top left box
+
+Logic: 
+1. First, the color of the box which is tapped is compared with the top left 
+elem's color
+2. If the color is same, it is a no-op
+3. Otherwise, color of the top elem is changed to new color
+4. the next elements(confining to boundary restrictions) is checked if the color is same as top-elem's old color.
+5. If yes, control moves to next-element
+6. This goes on till the reachable elements are found.

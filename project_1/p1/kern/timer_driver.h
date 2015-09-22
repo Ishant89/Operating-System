@@ -1,15 +1,16 @@
 /** @file Timer header file 
- *
  *  @brief header file for timer driver 
+ *  
+ *  This file contains necessary definitions and 
+ *  declarations and macros required. 
  *
- *  @author Ishant Dawer(idawer@andrew.cmu.edu)
+ *  @author Ishant Dawer(idawer)
  *
  *  @bug No known bugs
  */
 
 #include <p1kern.h>
 #include <stdio.h>
-/* EDIT: Remove later */
 #include <simics.h>
 #include <contracts.h>
 #include <asm.h>
@@ -69,14 +70,22 @@
 
 
 /* Callback function for timer handler */
-
+/** @brief Callback handler declaration */
 void (*callback_function_addr)(unsigned int) ;
 
 
-/** @brief */
+/** @brief Assembly handler 
+ *	
+ *	This is an assembly wrapper to perform 
+ *	saving general purpose registers and retrieving
+ *	them after C handler is done
+ */
 void timer_wrapper_asm();
 
 /** @brief Handler for timer interrupt 
+ *
+ *  Callback function which will be invoked
+ *  every time timer interrupt is received
  *
  * @param tickback function pointer 
  *
